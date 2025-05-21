@@ -1,7 +1,7 @@
 # Groupe de bikoum_s 1056566
 
 
-# Capteurs nécessaires pour une Verdana
+# Capteurs nécessaires pour Verdana
 
 
 - **Capteur d’humidité du sol**
