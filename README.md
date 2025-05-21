@@ -25,7 +25,7 @@
 
 
 
-## Capteurs additionnels (optionnels)
+## Capteurs optionnels
 
 - **Capteur de CO₂ (qualité de l’air)**
   - Mesure la concentration de dioxyde de carbone (ppm) autour de la plante.
