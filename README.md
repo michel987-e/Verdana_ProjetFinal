@@ -26,12 +26,10 @@
 
 - **Capteur de CO₂ (qualité de l’air)**
   - Mesure la concentration de dioxyde de carbone (ppm) autour de la plante.
-  - À placer à l’extérieur du pot.
 
 - **Capteur de conductivité électrique**
   
 - **Capteur de température**
-  - Mesure la température du sol (dans la terre) ou de l’air ambiant (à l’extérieur du pot).
 
 ---
 
