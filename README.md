@@ -7,9 +7,6 @@
 - **Capteur d’humidité du sol**
   - Mesure le taux d’humidité directement dans la terre du pot.
 
-- **Capteur de température**
-  - Mesure la température du sol (dans la terre) ou de l’air ambiant (à l’extérieur du pot).
-
 - **Capteur de lumière **
   - Mesure l’intensité lumineuse reçue par la plante.
   - À placer à l’extérieur du pot, orienté vers la lumière.
@@ -33,6 +30,9 @@
 
 - **Capteur de conductivité électrique**
   
+- **Capteur de température**
+  - Mesure la température du sol (dans la terre) ou de l’air ambiant (à l’extérieur du pot).
+
 ---
 
 **Remarque :**  
