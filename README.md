@@ -17,8 +17,6 @@
 - Sert à estimer la concentration d’engrais/nutriments dans le sol.
 
 
-- **Capteur de niveau d’eau du réservoir**
-  - Mesure le niveau d’eau restant dans le réservoir du pot (si pot avec réserve d’eau).
 
 
 
