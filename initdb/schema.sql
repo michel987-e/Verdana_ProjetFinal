@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS users_flowers (
-  id_flower int not null references flowers(id) on delete cascade,
-  id_user int not null references users(id) on delete cascade,
+  id_flower INT NOT NULL REFERENCES flowers(id) ON DELETE CASCADE,
+  id_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   unique(id_flower, id_user)
 );
