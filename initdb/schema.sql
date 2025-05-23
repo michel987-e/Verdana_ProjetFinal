@@ -1,25 +1,36 @@
-CREATE TABLE IF NOT EXISTS flowers (
+CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  species TEXT NOT NULL,
-  temp_min FLOAT NOT NULL,
-  temp_max FLOAT NOT NULL,
-  humidity_min FLOAT NOT NULL,
-  humidite_max FLOAT NOT NULL,
-  light_min FLOAT NOT NULL,
-  light_max FLOAT NOT NULL
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  name VARCHAR(100),
+  city VARCHAR(100),
+  country VARCHAR(10),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE plant_pots (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(100),
+    plant_type VARCHAR(100),
+    location VARCHAR(100),
+    temp_min FLOAT,
+    temp_max FLOAT,
+    humidity_min FLOAT,
+    humidity_max FLOAT,
+    soil_min FLOAT,
+    soil_max FLOAT,
+    light_min FLOAT,
+    light_max FLOAT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
-  mdp TEXT NOT NULL,
-  localisation TEXT
-);
-
-CREATE TABLE IF NOT EXISTS users_flowers (
-  id_flower INT NOT NULL REFERENCES flowers(id) ON DELETE CASCADE,
-  id_user INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  unique(id_flower, id_user)
+CREATE TABLE sensor_data (
+    id SERIAL PRIMARY KEY,
+    pot_id INT NOT NULL REFERENCES flowers(id) ON DELETE CASCADE,
+    temperature FLOAT,
+    humidity FLOAT,
+    soil FLOAT,
+    light FLOAT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
