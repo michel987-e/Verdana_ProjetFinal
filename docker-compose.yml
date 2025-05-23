@@ -2,21 +2,11 @@ services:
   api:
     build: ./api
     ports:
-      - "3000:80"
-    # depends_on:
-    #   - db
+      - "3000:3000"
+    env_file: ".env"
     networks:
       - api-network
-
-  # db:
-  #   image: postgres:16
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - ./db-data:/db/data
-  #     - ./initdb:/docker-entrypoint-initdb.d
-  #   networks:
-  #     - api-network
-
+      
 networks:
   api-network:
+    driver: bridge
