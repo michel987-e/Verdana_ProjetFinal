@@ -1,26 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(@InjectDataSource() private readonly db: DataSource) {}
+
+  async create(data: any) {
+    const result = await this.db.query(
+      `INSERT INTO users (email, password, name, city, country)
+       VALUES ($1, $2, $3, $4, $5)*`,
+      [data.email, data.password, data.name, data.city, data.country]
+    );
+    return result[0];
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    const result = await this.db.query(`SELECT * FROM users`);
+    return result;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async findOne(id: number) {
+    const result = await this.db.query(`SELECT * FROM users WHERE id = $1`, [id]);
+    return result[0];
   }
 }
