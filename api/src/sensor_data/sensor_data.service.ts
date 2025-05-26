@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSensorDatumDto } from './dto/create-sensor_datum.dto';
-import { UpdateSensorDatumDto } from './dto/update-sensor_datum.dto';
+import { CreateSensorDataDto } from './dto/create-sensor_data.dto';
+import { UpdateSensorDataDto } from './dto/update-sensor_data.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { SensorData } from './entities/sensor_data.entity';
 
 @Injectable()
 export class SensorDataService {
-  create(createSensorDatumDto: CreateSensorDatumDto) {
-    return 'This action adds a new sensorDatum';
+  constructor(
+    @InjectRepository(SensorData)
+    private sensorDataRepository: Repository<SensorData>
+  ) {}
+
+  async create(createSensorDataDto: CreateSensorDataDto) {
+    return await this.sensorDataRepository.save(createSensorDataDto);
   }
 
-  findAll() {
-    return `This action returns all sensorData`;
+  async findAll() {
+    return await this.sensorDataRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sensorDatum`;
+  async findOne(id: number) {
+    return await this.sensorDataRepository.findOne({ where: { id }});
   }
 
-  update(id: number, updateSensorDatumDto: UpdateSensorDatumDto) {
-    return `This action updates a #${id} sensorDatum`;
+  async update(id: number, updateSensorDataDto: UpdateSensorDataDto) {
+    const res = await this.sensorDataRepository.update(id, updateSensorDataDto);
+    return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sensorDatum`;
+  async remove(id: number) {
+    const sensorDataToDelete = await this.findOne(id);
+    if (sensorDataToDelete) {
+      return await this.sensorDataRepository.remove(sensorDataToDelete);
+    };
   }
 }
