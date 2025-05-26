@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFlowerDto } from './dto/create-flower.dto';
 import { UpdateFlowerDto } from './dto/update-flower.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Flower } from './entities/flower.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FlowersService {
-  create(createFlowerDto: CreateFlowerDto) {
-    return 'This action adds a new flower';
+  constructor(
+    @InjectRepository(Flower)
+    private flowerRepository: Repository<Flower>
+  ) {}
+
+  async create(createFlowerDto: CreateFlowerDto) {
+    return await this.flowerRepository.save(createFlowerDto);
   }
 
-  findAll() {
-    return `This action returns all flowers`;
+  async findAll() {
+    return await this.flowerRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} flower`;
+  async findOne(id: number) {
+    return await this.flowerRepository.findOne({ where: { id }});
   }
 
-  update(id: number, updateFlowerDto: UpdateFlowerDto) {
-    return `This action updates a #${id} flower`;
+  async update(id: number, updateFlowerDto: UpdateFlowerDto) {
+    const res = await this.flowerRepository.update(id, updateFlowerDto);
+    return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} flower`;
+  async remove(id: number) {
+    const flowerToDelete = await this.findOne(id);
+    if (flowerToDelete) {
+      return await this.flowerRepository.remove(flowerToDelete);
+    };
   }
 }

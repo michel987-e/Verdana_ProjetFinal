@@ -1,1 +1,49 @@
-export class User {}
+import { Flower } from "src/flowers/entities/flower.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({
+        type: "varchar",
+        length: 255,
+        unique: true,
+    })
+    email: string;
+
+    @Column({
+        type: "varchar"
+    })
+    password: string;
+
+    @Column({
+        type: "varchar",
+        length: 100,
+        nullable: true
+    })
+    name: string;
+
+    @Column({
+        type: "varchar",
+        length: 100,
+        nullable: true
+    })
+    city: string;
+
+    @Column({
+        type: "varchar",
+        length: 10,
+        nullable: true
+    })
+    country: string;
+
+    @CreateDateColumn({
+        type: 'timestamp',
+    })
+    created_at: Date;
+
+    @OneToMany(() => Flower, flower => flower.user)
+    flowers: Flower[];
+}
