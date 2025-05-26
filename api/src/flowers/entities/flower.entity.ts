@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { SensorDatum } from 'src/sensor_data/entities/sensor_datum.entity';
+import { SensorData } from 'src/sensor_data/entities/sensor_data.entity';
 
 @Entity()
 export class Flower {
@@ -93,6 +93,6 @@ export class Flower {
     })
     updated_at: Date;
 
-    @OneToMany(() => SensorDatum, sensor_datum => sensor_datum.flower)
-    sensor_datums: SensorDatum[];
+    @OneToMany(() => SensorData, sensor_data => sensor_data.flower)
+    sensor_datas: SensorData[];
 }

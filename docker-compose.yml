@@ -3,7 +3,7 @@ services:
     build: ./api
     ports:
       - "3000:3000"
-    env_file: ".env"
+    env_file: "./api/.env"
     networks:
       - api-network
       
