@@ -12,7 +12,7 @@ function HomeScreen({ navigation }: { navigation: any }) {
 <Text>Open up App.tsx to start working on your app!</Text>
       <View style={styles.buttonRow}>
         <Button title="Connexion" onPress={() => alert('abababbaba')} />
-        <Button title="Plante" onPress={() => navigation.navigate('Ma plante')} />
+        <Button title="Plante" onPress={() => navigation.navigate('Plante')} />
         <Button title="Support" onPress={() => alert('bahahaha !')} />
       </View>
       <StatusBar style="auto" />
