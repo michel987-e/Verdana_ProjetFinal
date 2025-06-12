@@ -1,5 +1,6 @@
 const express = require('express');
 const { getBotReply } = require('../services/chatbotService');
+const { findFlowerInfo } = require('../services/flowerDataService');
 
 const router = express.Router();
 
@@ -10,8 +11,14 @@ router.post('/ask', (req, res) => {
     return res.status(400).json({ error: 'Veuillez fournir une question.' });
   }
 
-  const response = getBotReply(question);
-  res.json({ reply: response });
+  const knownPlants = ['ficus', 'cactus'];
+  const detectedPlant = knownPlants.find(p => question.toLowerCase().includes(p));
+
+  const plantInfo = detectedPlant ? findFlowerInfo(detectedPlant) : null;
+
+  const reply = getBotReply(question, plantInfo);
+
+  res.json({ reply });
 });
 
 module.exports = router;
