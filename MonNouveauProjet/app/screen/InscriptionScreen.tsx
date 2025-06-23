@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 export default function InscriptionScreen() {
       const [email, setEmail] = useState<string>('');
       const [mdp, setmdp] = useState<string>('');
+      const [mdp2, setmdp2] = useState<string>('');
   return (
     <View style={styles.container}>
      
@@ -40,8 +41,8 @@ export default function InscriptionScreen() {
              <Text style={styles.label3}>confirmez mots de passe :</Text>
           <TextInput
             style={styles.input3}
-            value={mdp}
-            onChangeText={setmdp}
+            value={mdp2}
+            onChangeText={setmdp2}
             placeholder="Entrez a nouveau votre mots de passe"
             keyboardType="email-address"
             autoCapitalize="none"
