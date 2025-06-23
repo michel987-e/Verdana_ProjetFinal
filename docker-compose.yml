@@ -1,5 +1,4 @@
 services:
-
   traefik:
     image: traefik:v2.10
     command:
@@ -8,7 +7,7 @@ services:
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
-      - "8080:8080"  # UI UX de traefik
+      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     labels:
@@ -41,14 +40,54 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - micro-services
-  api:
-    build: ./api
-    ports:
-      - "3000:3000"
-    env_file: "./api/.env"
+  user:
+    build: ./user-service
+    expose:
+      - 80
+    env_file: "./user-service/.env"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.users.rule=PathPrefix(`/users`)"
+      - "traefik.http.services.users.loadbalancer.server.port=80"
     networks:
       - micro-services
-      
+
+  flower:
+    build: ./flower-service
+    expose:
+      - 80
+    env_file: ./flower-service/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flower.rule=PathPrefix(`/flower`)"
+      - "traefik.http.services.flower.loadbalancer.server.port=80"
+    depends_on:
+      - flower-db
+    networks:
+      - micro-services
+
+  flower-db:
+    image: postgres:15
+    env_file: ./flower-service/.env
+    volumes:
+      - ./flower-service/init.sql:/docker-entrypoint-initdb.d/init-flower.sql
+      - ./flower-data:/var/lib/postgresql/data
+    networks:
+      - micro-services
+
+  chatbot:
+    build: ./chatbot-service
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chatbot.rule=PathPrefix(`/chatbot`)"
+      - "traefik.http.services.chatbot.loadbalancer.server.port=80"
+    depends_on:
+      - kafka
+    networks:
+      - micro-services
+
 networks:
   micro-services:
     driver: bridge
