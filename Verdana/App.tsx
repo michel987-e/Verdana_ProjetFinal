@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Plante from './plante3';
 import Profil from './Profil';
 import Deconnexion from './Deconnexion';
+import Connexion from './Connexion'
 import Securite from './Securite';
 import Gestion from './Gestion';
 import Notifications from './Notifications';
@@ -16,7 +17,7 @@ function HomeScreen({ navigation }: { navigation: any }) {
     <View style={styles.container}>
 <Text>Open up App.tsx to start working on your app!</Text>
       <View style={styles.buttonRow}>
-        <Button title="Connexion" onPress={() => alert('abababbaba')} />
+        <Button title="Connexion" onPress={() => navigation.navigate('Connexion')} />
         <Button title="Plante" onPress={() => navigation.navigate('plante3')} />
         <Button title="Support" onPress={() => alert('bahahaha !')} />
           
@@ -34,6 +35,7 @@ export default function App() {
         <Stack.Screen name="plante3" component={Plante} />
         <Stack.Screen name="Profil" component={Profil} />
         <Stack.Screen name="Securite" component={Securite} />
+        <Stack.Screen name="Connexion" component={Connexion} />
         <Stack.Screen name="Gestion" component={Gestion} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Support" component={Support} />
