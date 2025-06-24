@@ -14,6 +14,8 @@ import Notifications from './Notifications';
 import Support from './Support';
 import ExploreScreen from './ExploreScreen';  
 import InscriptionScreen from './InscriptionScreen';
+import GuestWelcome from './Info';
+import Info from './Info';
 
 const Stack = createStackNavigator();
 
@@ -24,7 +26,8 @@ export default function App() {
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="plante3" component={Plante} />
+        <Stack.Screen name="Info" component={Info} options={{ headerShown: false }} />
+        <Stack.Screen name="plante3" component={Plante}  />
         <Stack.Screen name="Profil" component={Profil} />
         <Stack.Screen name="Securite" component={Securite} />
         <Stack.Screen name="Gestion" component={Gestion} />

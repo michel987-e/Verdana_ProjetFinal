@@ -13,7 +13,7 @@ export default function Home({ navigation }: any) {
           <Text style={styles.buttonText}>Non</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('plante3')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Info')}>
           <Text style={styles.buttonText}>Continuer en tant qu'invite</Text>
         </TouchableOpacity>
     </View>
