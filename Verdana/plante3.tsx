@@ -113,7 +113,6 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
     <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={isDarkMode ? '#232323' : '#FAFAFA'} />
       
-      {/* Header épuré */}
       <View style={[styles.header, isDarkMode && styles.headerDark]}>
         <TouchableOpacity 
           style={styles.menuButton} 
@@ -134,7 +133,7 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
           )}
         </TouchableOpacity>
       </View>
-
+{/*}
       {showMenu && (
         <TouchableOpacity 
           style={styles.menuOverlay} 
@@ -182,7 +181,7 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
           </View>
         </TouchableOpacity>
       )}
-
+*/}
       <View style={styles.weatherSection}>
         <View style={styles.weatherCard}>
           <View style={styles.weatherHeader}>

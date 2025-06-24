@@ -23,7 +23,7 @@ export default function Home({ navigation }: any) {
   }, []);
 
   const handleLogin = () => {
-    alert(`Connexion tentée avec Email: ${email} et Mot de passe: ${password}`);
+    alert(`Connexion tentée avec ${email} et ${password}`);
   };
 
   return (
