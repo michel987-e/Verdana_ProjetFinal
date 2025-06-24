@@ -1,67 +1,115 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useVideoPlayer, VideoView } from 'expo-video';
 
-export default function Support() {
+
+export default function Support({ navigation }: any) {
   return (
-    <View style={styles.container}>
-      <View style={styles.headerBox}>
-        <Text style={styles.headerText}>Support</Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Feather name="arrow-left" size={24} color="#232323" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Support</Text>
+        <View style={{ width: 24 }} />
       </View>
-      <View style={styles.centerContent}>
-        <Text style={styles.contactText}>Nous contacter</Text>
-        <View style={styles.underline} />
-      </View>
-        <Image source={require('./assets/logo.png')} style={styles.logo} />
-    </View>
+
+      <Text style={styles.sectionTitle}>Contactez-nous</Text>
+
+      <TouchableOpacity style={styles.contactItem}>
+        <View style={styles.iconContainer}>
+          <Feather name="mail" size={24} color="#2C5530" />
+        </View>
+        <View>
+          <Text style={styles.contactItemTitle}>Email</Text>
+          <Text style={styles.contactItemSubtitle}></Text>
+        </View>
+      </TouchableOpacity>
+
+
+
+      <Text style={styles.sectionTitle}>Tutoriel</Text>
+          {/*un tuto a voir*/}
+      <TouchableOpacity style={styles.tutorialItem} onPress={() => alert('Voir le tutoriel')}>
+        <View style={styles.iconContainer}>
+          <Feather name="play-circle" size={24} color="#2C5530" />
+        </View>
+        <Text style={styles.tutorialItemText}></Text>
+        <Feather name="chevron-right" size={20} color="#7F8C8D" />
+      </TouchableOpacity>
+
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderRadius: 30,
-    margin: 8,
-    overflow: 'hidden',
-    justifyContent: 'flex-start',
+    backgroundColor: '#FAFAFA',
   },
-  headerBox: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    marginTop: 20,
-    marginHorizontal: 30,
-    paddingVertical: 16,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
   },
-  headerText: {
-    fontSize: 26,
-    fontWeight: '500',
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
     color: '#232323',
   },
-  centerContent: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#232323',
+    marginTop: 30,
+    marginBottom: 15,
+    paddingHorizontal: 20,
+  },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E0F0E0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  contactItemTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#232323',
+  },
+  contactItemSubtitle: {
+    fontSize: 14,
+    color: '#2C5530',
+  },
+  tutorialItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  tutorialItemText: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginTop: 48,
-  },
-  contactText: {
-    fontSize: 28,
+    fontSize: 16,
     color: '#232323',
-    marginBottom: 8,
-  },
-  underline: {
-    width: 180,
-    height: 1,
-    backgroundColor: '#888',
-    marginTop: 2,
-    marginBottom: 8,
-  },
-  
-  
-  logo: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#FDF8E3',
-    marginLeft: 300,
+    marginLeft: 15,
   },
 });
