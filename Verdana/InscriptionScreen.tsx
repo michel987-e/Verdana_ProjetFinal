@@ -11,7 +11,7 @@ export default function InscriptionScreen() {
     <View style={styles.container}>
      
       <Image
-        source={require('../../assets/images/verdana.png')}
+        source={require('./assets/images/verdana.png')}
         style={{ width: 200, height: 200, top: -150,}}
       />
        <Text style={styles.label}>Email :</Text>
