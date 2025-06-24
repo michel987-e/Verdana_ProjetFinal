@@ -10,6 +10,7 @@ type ExploreScreenNavigationProp = NativeStackNavigationProp<RootStackParamList,
 export default function   ExploreScreen() {
   const navigation = useNavigation<ExploreScreenNavigationProp>();
    const [email, setEmail] = useState<string>('');
+    const [mdp, setmdp] = useState<string>('');
 
   return (
     <View style={styles.container}>
@@ -25,6 +26,19 @@ export default function   ExploreScreen() {
         autoCorrect={false}
       />
       <Text style={styles.text}>Email saisi : {email}</Text>
+
+
+      <Text style={styles.label}>mots de passe :</Text>
+      <TextInput
+        style={styles.input}
+        value={mdp}
+        onChangeText={setmdp}
+        placeholder="Entrez votre mots de passe"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      <Text style={styles.text}>mots de passe saisi : {mdp}</Text>
       
 
        <Image
