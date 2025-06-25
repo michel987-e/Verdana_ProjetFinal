@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import { View, Button, StyleSheet,  Image, Text, TextInput } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../../src/types';
+import { RootStackParamList } from './src/types';
 import React, { useState } from 'react';
 
 type ExploreScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Explore'>;
