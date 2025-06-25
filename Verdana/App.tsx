@@ -11,8 +11,7 @@ import Deconnexion from './Deconnexion';
 import Securite from './Securite';
 import Gestion from './Gestion';
 import Notifications from './Notifications';
-import Support from './Support';
-import ExploreScreen from './ExploreScreen';  
+import Support from './Support';  
 import InscriptionScreen from './InscriptionScreen';
 import GuestWelcome from './Info';
 import Info from './Info';
@@ -33,7 +32,6 @@ export default function App() {
         <Stack.Screen name="Gestion" component={Gestion} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Support" component={Support} />
-        <Stack.Screen name="Explore" component={ExploreScreen} />
         <Stack.Screen name="Inscription" component={InscriptionScreen} />
       </Stack.Navigator>
     </NavigationContainer>
