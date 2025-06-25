@@ -1,5 +1,4 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Flower } from 'src/flowers/entities/flower.entity';
 
 @Entity()
 export class User {
@@ -23,7 +22,4 @@ export class User {
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
-
-  @OneToMany(() => Flower, (flower) => flower.user)
-  flowers: Flower[];
 }

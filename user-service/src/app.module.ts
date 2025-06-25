@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FlowersModule } from './flowers/flowers.module';
 import { UsersModule } from './users/users.module';
-import { SensorDataModule } from './sensor_data/sensor_data.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -31,9 +30,8 @@ import { join } from 'path';
         synchronize: true,
       }),
     }),
-    FlowersModule,
     UsersModule,
-    SensorDataModule
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
