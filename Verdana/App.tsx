@@ -1,7 +1,10 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import WelcomeScreen from './WelcomeScreen';
+import Home from './Home';
 import Plante from './plante3';
 import Profil from './Profil';
 import Deconnexion from './Deconnexion';
@@ -9,34 +12,29 @@ import Securite from './Securite';
 import Gestion from './Gestion';
 import Notifications from './Notifications';
 import Support from './Support';
+import ExploreScreen from './ExploreScreen';  
+import InscriptionScreen from './InscriptionScreen';
+import GuestWelcome from './Info';
+import Info from './Info';
+
 const Stack = createStackNavigator();
 
-function HomeScreen({ navigation }: { navigation: any }) {
-  return (
-    <View style={styles.container}>
-<Text>Open up App.tsx to start working on your app!</Text>
-      <View style={styles.buttonRow}>
-        <Button title="Connexion" onPress={() => alert('abababbaba')} />
-        <Button title="Plante" onPress={() => navigation.navigate('plante3')} />
-        <Button title="Support" onPress={() => alert('bahahaha !')} />
-          
-      </View>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="plante3" component={Plante} />
+      <Stack.Navigator initialRouteName="Welcome">
+        <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Info" component={Info} options={{ headerShown: false }} />
+        <Stack.Screen name="plante3" component={Plante}  />
         <Stack.Screen name="Profil" component={Profil} />
         <Stack.Screen name="Securite" component={Securite} />
         <Stack.Screen name="Gestion" component={Gestion} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Support" component={Support} />
+        <Stack.Screen name="Explore" component={ExploreScreen} />
+        <Stack.Screen name="Inscription" component={InscriptionScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

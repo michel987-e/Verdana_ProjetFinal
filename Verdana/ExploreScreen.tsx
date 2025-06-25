@@ -42,7 +42,7 @@ export default function   ExploreScreen() {
       
 
        <Image
-  source={require('../../assets/images/verdana.png')}
+  source={require('./assets/images/verdana.png')}
   style={{ width: 200, height: 200, top: -350,}}
   
 />
