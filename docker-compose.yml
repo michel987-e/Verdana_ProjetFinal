@@ -1,0 +1,93 @@
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+    networks:
+      - micro-services
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    networks:
+      - micro-services
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - micro-services
+  user:
+    build: ./user-service
+    expose:
+      - 80
+    env_file: "./user-service/.env"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.users.rule=PathPrefix(`/users`)"
+      - "traefik.http.services.users.loadbalancer.server.port=80"
+    networks:
+      - micro-services
+
+  flower:
+    build: ./flower-service
+    expose:
+      - 80
+    env_file: ./flower-service/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flower.rule=PathPrefix(`/flower`)"
+      - "traefik.http.services.flower.loadbalancer.server.port=80"
+    depends_on:
+      - flower-db
+    networks:
+      - micro-services
+
+  flower-db:
+    image: postgres:15
+    env_file: ./flower-service/.env
+    volumes:
+      - ./flower-service/init.sql:/docker-entrypoint-initdb.d/init-flower.sql
+      - ./flower-data:/var/lib/postgresql/data
+    networks:
+      - micro-services
+
+  chatbot:
+    build: ./chatbot-service
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chatbot.rule=PathPrefix(`/chatbot`)"
+      - "traefik.http.services.chatbot.loadbalancer.server.port=80"
+    depends_on:
+      - kafka
+    networks:
+      - micro-services
+
+networks:
+  micro-services:
+    driver: bridge

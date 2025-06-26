@@ -1,0 +1,233 @@
+openapi: 3.0.3
+info:
+  title: Verdana API
+  description: API pour l'application mobile Verdana, qui permet de suivre l'état des plantes via capteurs, chatbot et notifications.
+  version: 1.0.0
+
+servers:
+  - url: https://??
+    description: Pas de serveur pour l'instant
+
+tags:
+  - name: users
+    description: Opérations sur les utilisateurs
+  - name: flowers
+    description: Gestion des plantes
+  - name: sensor_data
+    description: Données capteurs des plantes
+    
+paths:
+  /users:
+    post:
+      tags:
+        - users
+      operationId: createUser
+      summary: Créer un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Utilisateur créé
+        '400':
+          description: Erreur de validation
+
+  /users/{id}:
+    get:
+      tags:
+        - users
+      operationId: getUserById
+      summary: Récupérer les infos d'un utilisateur
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Utilisateur non trouvé
+
+  /flowers:
+    post:
+      tags:
+        - flowers
+      operationId: createFlower
+      summary: Ajouter une plante
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowerInput'
+      responses:
+        '201':
+          description: Plante ajoutée
+        '400':
+          description: Erreur de validation
+
+    get:
+      tags:
+      - flowers
+      operationId: getAllFlowers
+      summary: Liste des plantes
+      responses:
+        '200':
+          description: Liste des plantes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flower'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    UserInput:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+
+    Flower:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        name:
+          type: string
+        plant_type:
+          type: string
+        location:
+          type: string
+        temp_min:
+          type: number
+        temp_max:
+          type: number
+        humidity_min:
+          type: number
+        humidity_max:
+          type: number
+        soil_min:
+          type: number
+        soil_max:
+          type: number
+        light_min:
+          type: number
+        light_max:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    FlowerInput:
+      type: object
+      required:
+        - user_id
+        - name
+      properties:
+        user_id:
+          type: integer
+        name:
+          type: string
+        plant_type:
+          type: string
+        location:
+          type: string
+        temp_min:
+          type: number
+        temp_max:
+          type: number
+        humidity_min:
+          type: number
+        humidity_max:
+          type: number
+        soil_min:
+          type: number
+        soil_max:
+          type: number
+        light_min:
+          type: number
+        light_max:
+          type: number
+
+    SensorData:
+      type: object
+      properties:
+        id:
+          type: integer
+        pot_id:
+          type: integer
+        temperature:
+          type: number
+        humidity:
+          type: number
+        soil:
+          type: number
+        light:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    SensorDataInput:
+      type: object
+      required:
+        - pot_id
+        - temperature
+        - humidity
+        - soil
+        - light
+      properties:
+        pot_id:
+          type: integer
+        temperature:
+          type: number
+        humidity:
+          type: number
+        soil:
+          type: number
+        light:
+          type: number
