@@ -7,22 +7,22 @@ const PLANTS = [
   {
     id: '1',
     name: 'Monstera Deliciosa',
-    image: require('./assets/images/monstera.jpg'),
+    image: require('../assets/images/monstera.jpg'),
   },
   {
     id: '2',
     name: 'Fiddle Leaf Fig',
-    image: require('./assets/images/fiddleleaf.jpg'),
+    image: require('../assets/images/fiddleleaf.jpg'),
   },
   {
     id: '3',
     name: 'Snake Plant',
-    image: require('./assets/images/photo.png'),
+    image: require('../assets/images/photo.png'),
   },
   {
     id: '4',
     name: 'ZZ Plant',
-    image: require('./assets/images/photo.png'),
+    image: require('../assets/images/photo.png'),
   },
 ];
 

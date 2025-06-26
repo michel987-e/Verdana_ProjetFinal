@@ -7,25 +7,25 @@ const plantsData = [
     id: '1',
     name: 'plante1',
     
-    image: require('./assets/images/favicon.png'),
+    image: require('../assets/images/favicon.png'),
   },
   {
     id: '2',
     name: 'plante2',
     
-    image: require('./assets/images/verdana.png'),
+    image: require('../assets/images/verdana.png'),
   },
   {
     id: '3',
     name: 'plante3',
     
-    image: require('./assets/images/verdana.png'), 
+    image: require('../assets/images/verdana.png'), 
   },
   {
     id: '4',
     name: 'plante4',
     
-    image: require('./assets/images/verdana.png'), 
+    image: require('../assets/images/verdana.png'), 
   },
 ];
 
