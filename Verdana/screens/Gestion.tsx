@@ -19,7 +19,7 @@ export default function Gestion({ navigation }: any) {
 
       <View style={styles.profileSection}>
         <Image
-          source={require('./assets/images/photo.png')} 
+          source={require('../assets/images/photo.png')} 
           style={styles.profileImage}
         />
         <View style={styles.profileInfo}>
