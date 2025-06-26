@@ -15,6 +15,7 @@ import Support from './Support';
 import InscriptionScreen from './InscriptionScreen';
 import GuestWelcome from './Info';
 import Info from './Info';
+import AddPlante from './AddPlante';
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ export default function App() {
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Support" component={Support} />
         <Stack.Screen name="Inscription" component={InscriptionScreen} />
+        <Stack.Screen name="AddPlante" component={AddPlante} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
