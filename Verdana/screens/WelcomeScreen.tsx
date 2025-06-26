@@ -70,7 +70,7 @@ export default function WelcomeScreen({ navigation }: any) {
         ]}
       >
         <Image
-          source={require('./assets/logo.png')}
+          source={require('../assets/verdana.png')}
           style={styles.logo}
           resizeMode="contain"
         />
