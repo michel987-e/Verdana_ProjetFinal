@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 const plantsData = [
@@ -30,6 +30,24 @@ const plantsData = [
 ];
 
 export default function Info({ navigation }: any) {
+  const slideAnim = useRef(new Animated.Value(40)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 1700,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 700,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
+
   const renderPlantItem = ({ item }: { item: typeof plantsData[0] }) => (
     <TouchableOpacity style={styles.plantCard} onPress={() => navigation.navigate('plante3', { plantId: item.id })}>
       <Image source={item.image} style={styles.plantImage} />
@@ -40,31 +58,39 @@ export default function Info({ navigation }: any) {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Mes plantes</Text>
-        <TouchableOpacity onPress={() => alert('Ajouter une nouvelle plante')}>
-          <Feather name="plus" size={24} color="#2C5530" />
-        </TouchableOpacity>
-      </View>
-      
-      <FlatList
-        data={plantsData}
-        renderItem={renderPlantItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.plantList}
-      />
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={() => navigation.navigate('Info')}> 
-          <Feather name="home" size={24} color="#2C5530" />
-        </TouchableOpacity>
+    <Animated.View
+      style={{
+        flex: 1,
+        opacity: fadeAnim,
+        transform: [{ translateX: slideAnim }],
+      }}
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Mes plantes</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('AddPlante')} style={{ padding: 10 }}>
+            <Feather name="plus" size={24} color="#2C5530" />
+          </TouchableOpacity>
+        </View>
         
-        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Gestion')}> 
-          <Feather name="settings" size={24} color="#2C5530" />
-        </TouchableOpacity>
+        <FlatList
+          data={plantsData}
+          renderItem={renderPlantItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.plantList}
+        />
+
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={() => navigation.navigate('Info')}> 
+            <Feather name="home" size={24} color="#2C5530" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Gestion')}> 
+            <Feather name="settings" size={24} color="#2C5530" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -88,7 +114,7 @@ const styles = StyleSheet.create({
   },
   plantList: {
     paddingHorizontal: 20,
-    paddingBottom: 80, // Espace pour la barre de navigation du bas
+    paddingBottom: 80,
   },
   plantCard: {
     flexDirection: 'row',
@@ -143,4 +169,4 @@ const styles = StyleSheet.create({
     // Styles pour l'icône active
     // Tu peux ajuster la couleur ou ajouter un fond, etc.
   },
-}); 
+});

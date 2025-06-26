@@ -16,12 +16,32 @@ const PLANTS = [
   },
   {
     id: '3',
-    name: 'Snake Plant',
+    name: 'Calathea',
     image: require('./assets/images/photo.png'),
   },
   {
     id: '4',
-    name: 'ZZ Plant',
+    name: 'Tomate',
+    image: require('./assets/images/photo.png'),
+  },
+  {
+    id: '5',
+    name: 'Basilic',
+    image: require('./assets/images/photo.png'),
+  },
+  {
+    id: '6',
+    name: 'Figuier lyre',
+    image: require('./assets/images/photo.png'),
+  },
+  {
+    id: '7',
+    name: 'Plante de jade',
+    image: require('./assets/images/photo.png'),
+  },
+  {
+    id: '8',
+    name: 'Cactus',
     image: require('./assets/images/photo.png'),
   },
 ];
