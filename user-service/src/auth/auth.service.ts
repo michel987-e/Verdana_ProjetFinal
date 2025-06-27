@@ -21,13 +21,11 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return await this.jwtService.sign(payload);
   }
 
   async register(email: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.usersService.createUser(email, hashedPassword);
+    return await this.usersService.createUser(email, hashedPassword);
   }
 }
