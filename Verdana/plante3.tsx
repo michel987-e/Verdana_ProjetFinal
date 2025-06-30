@@ -1,19 +1,17 @@
-// Plante.tsx
 import React, { useEffect, useState } from 'react';
-import { Alert,View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, PermissionsAndroid, Platform } from 'react-native';
+import { Alert, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, PermissionsAndroid, Platform, StatusBar } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { createStackNavigator } from '@react-navigation/stack';
-
-
-
+import * as Location from 'expo-location';
+import { LineChart } from '@mui/x-charts/LineChart';
 export default function PlanteScreen({ navigation }: { navigation: any }) {
   const [data, setData] = useState<{ temp?: number; hum?: number; lux?: number }>({});
   const [showMenu, setShowMenu] = useState(false);
   const [apiData, setApiData] = useState<any>({});
-    const [activeTab, setActiveTab] = useState<'leaf' | 'settings'>('leaf');
-    const Stack = createStackNavigator();
-
+  const [activeTab, setActiveTab] = useState<'leaf' | 'settings'>('leaf');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const Stack = createStackNavigator();
 
   const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
 
@@ -47,14 +45,17 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
             return;
           }
         }
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            const { latitude, longitude } = position.coords;
-            reverseGeocode(latitude, longitude);
-          },
-          error => console.log(error),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-        );
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('Permission localisation refusée');
+          return;
+        }
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          timeInterval: 10000,
+          distanceInterval: 10
+        });
+        reverseGeocode(location.coords.latitude, location.coords.longitude);
       } catch (err) {
         console.error('Erreur getLocation', err);
       }
@@ -65,13 +66,30 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
         );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.log('Réponse non-JSON reçue, utilisation de la ville par défaut');
+          fetchWeather('Paris');
+          return;
+        }
+        
         const data = await response.json();
-        const city = data.address.city || data.address.town || data.address.village;
+        const city = data.address?.city || data.address?.town || data.address?.village;
         if (city) {
           fetchWeather(city);
+        } else {
+          console.log('Ville non trouvée, utilisation de la ville par défaut');
+          fetchWeather('Paris');
         }
       } catch (err) {
         console.error('Erreur reverse geocoding', err);
+        console.log('Utilisation de la ville par défaut en cas d\'erreur');
+        fetchWeather('Paris');
       }
     };
     const fetchWeather = async (cityName: string) => {
@@ -91,279 +109,397 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
     return (k - 273.15).toFixed(1);
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.userIconContainer} onPress={() => setShowMenu(!showMenu)}>
-          <View style={styles.userIconBorder}>
-            <FontAwesome name="user" size={28} color="white" />
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Dashboard Plante</Text>
-        <TouchableOpacity style={styles.bellIconContainer}>
-          <Feather name="bell" size={26} color="#232323" />
-        </TouchableOpacity>
-      </View>
-      {showMenu && (
-        <View style={styles.menuBox}>
-          <Text style={styles.menuItem} onPress={() => navigation.navigate('Profil')}>Profil utilisateur</Text>
-          <Text style={styles.menuItem} onPress={() => navigation.navigate('Securite')}>Profil utilisateur</Text>
-          <Text style={styles.menuItem} onPress={() => navigation.navigate('Gestion')}>Gestion</Text>
-          <Text style={styles.menuItem} onPress={() => navigation.navigate('Notifications')}>Profil utilisateur</Text>
-          <Text style={styles.menuItem} onPress={() => navigation.navigate('Support')}>Profil utilisateur</Text>
-          <Text
-  style={styles.menuItem}
-  onPress={() => {
-    Alert.alert(
-      "Déconnexion",
-      "Voulez-vous vous déconnecter ?",
-      [
-        { text: "Annuler", style: "cancel" },
-        { text: "Oui", onPress: () => navigation.navigate('Home') }
-      ]
-    );
-  }}
->
-  Deconnexion
-</Text>
+  function getSensorStatus(type: 'temp' | 'hum' | 'lux', value: number | undefined) {
+    if (value === undefined || value === null) return { color: 'gray', label: 'Indisponible' };
+    if (type === 'temp') {
+      if (value < 15) return { color: 'red', label: 'Trop froid' };
+      if (value > 28) return { color: 'red', label: 'Trop chaud' };
+      return { color: 'green', label: 'Optimal' };
+    }
+    if (type === 'hum') {
+      if (value < 40) return { color: 'red', label: 'Pas assez' };
+      if (value > 80) return { color: 'red', label: 'Trop' };
+      return { color: 'green', label: 'Optimal' };
+    }
+    if (type === 'lux') {
+      if (value < 200) return { color: 'red', label: 'Pas assez' };
+      if (value > 2000) return { color: 'red', label: 'Trop' };
+      return { color: 'green', label: 'Optimal' };
+    }
+    return { color: 'gray', label: 'Indisponible' };
+  }
 
-        </View>
-      )}
-      <View style={styles.weatherBox}>
-        {apiData.weather && apiData.weather[0] && (
-          <Image
-            source={{ uri: `https://openweathermap.org/img/wn/${apiData.weather[0].icon}@4x.png` }}
-            style={{ width: 48, height: 48, marginRight: 12 }}
-          />
+  const BlinkingDot = ({ color }: { color: string }) => {
+    const [visible, setVisible] = useState(true);
+    
+    return (
+      <View style={{ alignItems: 'center', height: 18 }}>
+        {visible && (
+          <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: color, marginBottom: 2 }} />
         )}
-        <View style={styles.weatherInfoCol}>
-          <Text style={styles.weatherTitle}>Meteo du jour</Text>
-          <Text style={styles.weatherTemp}>
-            {apiData.main ? `${kelvinToCelsius(apiData.main.temp)}°C` : '--'}
-          </Text>
-          <Text style={styles.weatherCity}>
-            {apiData.name || '--'}
-          </Text>
+      </View>
+    );
+  };
+  const tempStatus = getSensorStatus('temp', data.temp ?? 10);
+  const humStatus = getSensorStatus('hum', data.hum ?? 80);
+  const luxStatus = getSensorStatus('lux', data.lux?? 500); 
+
+  return (
+    <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={isDarkMode ? '#232323' : '#FAFAFA'} />
+      
+      <View style={[styles.header, isDarkMode && styles.headerDark]}>
+        <TouchableOpacity 
+          style={styles.menuButton} 
+          onPress={() => setShowMenu(!showMenu)}
+        >
+          <Feather name="menu" size={24} color={isDarkMode ? '#FFF' : '#2C5530'} />
+        </TouchableOpacity>
+        
+        <View style={styles.headerCenter}>
+          <Text style={[styles.headerTitle, isDarkMode && { color: '#FAFAFA' }]}>Dashboard plante</Text>
         </View>
         
-      </View>
-      <View style={styles.cardsRow}>
-        <View style={styles.card}>
-          <MaterialCommunityIcons name="thermometer" size={28} color="#e67e22" />
-          <Text style={styles.cardValue}>{data.temp ?? '--'}°C</Text>
-          <Text style={styles.cardLabel}>Température</Text>
-        </View>
-        <View style={styles.card}>
-          <MaterialCommunityIcons name="water-percent" size={28} color="#3498db" />
-          <Text style={styles.cardValue}>{data.hum ?? '--'}%</Text>
-          <Text style={styles.cardLabel}>Humidité</Text>
-        </View>
-        <View style={styles.card}>
-          <MaterialCommunityIcons name="white-balance-sunny" size={28} color="#f1c40f" />
-          <Text style={styles.cardValue}>{data.lux ?? '--'}</Text>
-          <Text style={styles.cardLabel}>Lumière</Text>
-        </View>
-      </View>
-      {/*<View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.footerBtn}
-          onPress={() => setActiveTab('leaf')}
-        >
-          <FontAwesome
-            name="leaf"
-            size={22}
-            color={activeTab === 'leaf' ? "#4a90e2" : "#b8b0ad"}
-          />
+        <TouchableOpacity style={styles.notificationButton} onPress={() => setIsDarkMode(!isDarkMode)}>
+          {isDarkMode ? (
+            <Feather name="sun" size={22} color="#FFD700" />
+          ) : (
+            <Feather name="moon" size={22} color="#2C5530" />
+          )}
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.footerBtn}
-          onPress={() => setActiveTab('settings')}
+      </View>
+{/*}
+      {showMenu && (
+        <TouchableOpacity 
+          style={styles.menuOverlay} 
+          activeOpacity={1}
+          onPress={() => setShowMenu(false)}
         >
-          <FontAwesome
-            name="cog"
-            size={22}
-            color={activeTab === 'settings' ? "#4a90e2" : "#b8b0ad"}
-          />
+          <View style={styles.menuContainer}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Profil')}>
+              <Feather name="user" size={18} color="#2C5530" />
+              <Text style={styles.menuText}>Profil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Securite')}>
+              <Feather name="shield" size={18} color="#2C5530" />
+              <Text style={styles.menuText}>Sécurité</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Gestion')}>
+              <Feather name="settings" size={18} color="#2C5530" />
+              <Text style={styles.menuText}>Gestion</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Notifications')}>
+              <Feather name="bell" size={18} color="#2C5530" />
+              <Text style={styles.menuText}>Notifications</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Support')}>
+              <Feather name="help-circle" size={18} color="#2C5530" />
+              <Text style={styles.menuText}>Support</Text>
+            </TouchableOpacity>
+            <View style={styles.menuDivider} />
+            <TouchableOpacity 
+              style={[styles.menuItem, styles.logoutItem]}
+              onPress={() => {
+                Alert.alert(
+                  "Déconnexion",
+                  "Voulez-vous vous déconnecter ?",
+                  [
+                    { text: "Annuler", style: "cancel" },
+                    { text: "Oui", onPress: () => navigation.navigate('Home') }
+                  ]
+                );
+              }}
+            >
+              <Feather name="log-out" size={18} color="#E74C3C" />
+              <Text style={[styles.menuText, styles.logoutText]}>Déconnexion</Text>
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
-      </View>*/}
+      )}
+*/}
+      <View style={styles.weatherSection}>
+        <View style={styles.weatherCard}>
+          <View style={styles.weatherHeader}>
+            <Feather name="map-pin" size={16} color="#7F8C8D" />
+            <Text style={[styles.locationText, isDarkMode && { color: '#000' }]}>{apiData.name || 'Localisation'}</Text>
+          </View>
+          
+          <View style={styles.weatherContent}>
+            {apiData.weather && apiData.weather[0] && (
+              <Image
+                source={{ uri: `https://openweathermap.org/img/wn/${apiData.weather[0].icon}@2x.png` }}
+                style={styles.weatherIcon}
+              />
+            )}
+            <View style={styles.weatherInfo}>
+              <Text style={[styles.temperature, isDarkMode && { color: '#000' }]}>
+                {apiData.main ? `${kelvinToCelsius(apiData.main.temp)}°` : '--'}
+              </Text>
+              <Text style={[styles.weatherDescription, isDarkMode && { color: '#000' }]}>
+                {apiData.weather && apiData.weather[0] ? apiData.weather[0].description : 'Météo'}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.sensorsSection}>
+        <Text style={{ fontSize: 60, textAlign: 'center', marginBottom: 0 }}>🪴</Text>
+        
+        <Text style={[styles.sectionTitle, isDarkMode && { color: '#FAFAFA' }]}>État de vos plantes</Text>
+        
+        <View style={styles.sensorsGrid}>
+          <View style={styles.sensorCard}>
+            <View style={styles.sensorIconContainer}>
+              <MaterialCommunityIcons name="thermometer" size={24} color="#E67E22" />
+            </View>
+            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.temp ?? 10}°C</Text>
+            <BlinkingDot color={tempStatus.color} />
+            <Text style={{ fontSize: 13, color: tempStatus.color, marginBottom: 8 }}>{tempStatus.label}</Text>
+            <Text style={[styles.sensorLabel, isDarkMode && { color: '#000' }]}>Température</Text>
+          </View>
+
+          <View style={styles.sensorCard}>
+            <View style={styles.sensorIconContainer}>
+              <MaterialCommunityIcons name="water-percent" size={24} color="#3498DB" />
+            </View>
+            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.hum ?? 80}%</Text>
+            <BlinkingDot color={humStatus.color} />
+            <Text style={{ fontSize: 13, color: humStatus.color, marginBottom: 8 }}>{humStatus.label}</Text>
+            <Text style={[styles.sensorLabel, isDarkMode && { color: '#000' }]}>Humidité</Text>
+          </View>
+
+          <View style={styles.sensorCard}>
+            <View style={styles.sensorIconContainer}>
+              <MaterialCommunityIcons name="white-balance-sunny" size={24} color="#F1C40F" />
+            </View>
+            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.lux ?? 500}</Text>
+            <BlinkingDot color={luxStatus.color} />
+            <Text style={{ fontSize: 13, color: luxStatus.color, marginBottom: 8 }}>{luxStatus.label}</Text>
+            <Text style={[styles.sensorLabel, isDarkMode && { color: '#000' }]}>Luminosité</Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.sensorGraph}>
+        <Text style={[styles.sectionTitle, isDarkMode && { color: '#FAFAFA' }]}>Graphique des capteurs</Text>
+        <Text style={{ fontSize: 16, color: '#7F8C8D', textAlign: 'center', marginBottom: 16 }}>
+          (Graphique à venir bouton voir plus ?)
+        </Text>
+
+
+    <LineChart
+      xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+      series={[
+        {
+          data: [2, 5.5, 2, 8.5, 1.5, 5],
+        },
+      ]}
+      height={300}
+    />
+  
+
+      </View>
     </SafeAreaView>
-    
   );
 }
 
-
-
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#FAFAFA',
   },
-  triangle: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 180,
-    borderBottomWidth: 120,
-    borderLeftColor: 'transparent',
-    borderBottomColor: '#e6f0fa',
-    zIndex: 0,
+  containerDark: {
+    backgroundColor: '#232323',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingTop: 18,
-    paddingBottom: 10,
-    backgroundColor: 'transparent',
-    zIndex: 10,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
+    backgroundColor: '#FAFAFA',
+  },
+  headerDark: {
+    backgroundColor: '#232323',
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerCenter: {
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#232323',
-    letterSpacing: 0.5,
-  },
-  userIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  userIconBorder: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#232323',
-    borderWidth: 2,
-    borderColor: '#b8b0ad',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bellIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  menuBox: {
-    position: 'absolute',
-    top: 70,
-    left: 24,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    zIndex: 20,
-  },
-  menuItem: {
-    fontSize: 16,
-    color: '#232323',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  weatherBox: {
-    width: '20%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 18,
-    marginHorizontal: 24,
-    marginTop: 32,
-    marginBottom: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  weatherInfoCol: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginLeft: 4,
-  },
-  weatherTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#232323',
-    marginBottom: 2,
-  },
-  weatherTemp: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4a90e2',
-    marginBottom: 0,
+    fontWeight: '700',
+    color: '#2C5530',
+    letterSpacing: -0.5,
   },
-  weatherCity: {
-    fontSize: 15,
-    color: '#232323',
-    marginTop: 2,
-  },
-  weatherBtn: {
-    marginLeft: 'auto',
-    backgroundColor: '#e6f0fa',
-    borderRadius: 16,
-    padding: 8,
-  },
-  cardsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 18,
-    marginTop: 18,
-    marginBottom: 32,
-  },
-  card: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    alignItems: 'center',
-    marginHorizontal: 6,
-    paddingVertical: 22,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  cardValue: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#232323',
-    marginTop: 8,
-  },
-  cardLabel: {
+  headerSubtitle: {
     fontSize: 14,
-    color: '#b8b0ad',
+    color: '#7F8C8D',
     marginTop: 2,
   },
-  footer: {
+  notificationButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuOverlay: {
     position: 'absolute',
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 14,
-   
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    zIndex: 1000,
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: 80,
+    left: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    minWidth: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
     elevation: 8,
   },
-  footerBtn: {
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#2C5530',
+    marginLeft: 12,
+    fontWeight: '500',
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: '#E8E8E8',
+    marginVertical: 8,
+  },
+  logoutItem: {
+    marginTop: 4,
+  },
+  logoutText: {
+    color: '#E74C3C',
+  },
+  weatherSection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  weatherCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  weatherHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  locationText: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginLeft: 6,
+  },
+  weatherContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  weatherIcon: {
+    width: 60,
+    height: 60,
+    marginRight: 16,
+  },
+  weatherInfo: {
+    flex: 1,
+  },
+  temperature: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#2C5530',
+    marginBottom: 4,
+  },
+  weatherDescription: {
+    fontSize: 16,
+    color: '#7F8C8D',
+    textTransform: 'capitalize',
+  },
+  sensorsSection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2C5530',
+    marginBottom: 16,
+  },
+  sensorsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  sensorCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 4,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  sensorIconContainer: {
     width: 48,
     height: 48,
+    borderRadius: 24,
+    backgroundColor: '#F8F9FA',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 12,
+  },
+  sensorValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#2C5530',
+    marginBottom: 4,
+  },
+  sensorLabel: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginBottom: 8,
+  },
+  sensorGraph: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  sensorGraphTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2C5530',
+    marginBottom: 16,
   },
 });
