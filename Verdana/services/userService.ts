@@ -9,8 +9,22 @@ export const getUserById = async (id: number) => {
 }
 
 export const updateMyUser = async (dataToModify: string, data: string) => {
-        await api.put('/users/updatemyuser', {
-            [dataToModify]: data
-        }
-    )
+    await api.put('/users/updatemyuser', {
+        [dataToModify]: data
+    })
+}
+
+export const loginUser = async (email: string, password: string) => {
+    return await api.post('/users/auth/login', {
+        email: email,
+        password: password
+    })
+    .then((response) => response.data)
+    .catch((err) => console.log(err))
+}
+
+export const logoutUser = async () => {
+    return await api.post('/users/auth/logout')
+    .then((response) => response.data)
+    .catch((err) => console.log(err))
 }
