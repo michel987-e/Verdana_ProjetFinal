@@ -18,7 +18,9 @@ import GuestWelcome from './Info';
 import Info from './Info';
 import AddPlante from './AddPlante';
 
+
 const Stack = createStackNavigator();
+
 
 export default function App() {
   return (
