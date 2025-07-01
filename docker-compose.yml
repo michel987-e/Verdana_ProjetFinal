@@ -40,6 +40,25 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - micro-services
+  
+  # front:
+  #   build: ./Verdana
+  #   expose:
+  #     - 8081
+  #     - 19000
+  #     - 19001
+  #     - 19002
+  #   env_file: "./Verdana/.env"
+  #   environment:
+  #     - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.front.rule=PathPrefix(`/`)"
+  #     - "traefik.http.services.front.loadbalancer.server.port=8081"
+  #     - "traefik.http.routers.expo.rule=PathPrefix(`/expo`)"
+  #     - "traefik.http.services.expo.loadbalancer.server.port=19002"
+  #   networks:
+  #       - micro-services
   user:
     build: ./user-service
     expose:
@@ -71,7 +90,7 @@ services:
     env_file: ./flower-service/.env
     volumes:
       - ./flower-service/init.sql:/docker-entrypoint-initdb.d/init-flower.sql
-      - ./flower-data:/var/lib/postgresql/data
+      - flower-data:/var/lib/postgresql/data
     networks:
       - micro-services
 
@@ -87,6 +106,10 @@ services:
       - kafka
     networks:
       - micro-services
+
+volumes:
+  flower-data:
+    driver: local
 
 networks:
   micro-services:
