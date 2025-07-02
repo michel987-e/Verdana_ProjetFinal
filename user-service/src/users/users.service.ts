@@ -12,17 +12,12 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findByUsername(email: string): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
-  }
-
-  async createUser(email: string, password: string): Promise<User> {
-    const user = this.usersRepository.create({ email, password });
     return this.usersRepository.save(user);
   }
 

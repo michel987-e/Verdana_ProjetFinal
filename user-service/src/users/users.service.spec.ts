@@ -34,30 +34,24 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a user', async () => {
-    const userData = {
-      email: 'test@test.com',
-      password: 'password',
-    };
+  describe('create', () => {
+    it('should create and return a user', async () => {
+      const dto = {
+        email: 'test@test.com',
+        password: 'password',
+        name: 'John',
+        city: 'Paris',
+        country: 'France',
+      };
 
-    const createdUser = {
-      id: 1,
-      email: userData.email,
-      password: userData.password,
-      name: 'Test',
-      city: 'Paris',
-      country: 'France',
-      created_at: new Date(),
-    };
+      const user = { id: 1, ...dto, created_at: new Date() };
+      repo.create.mockReturnValue(user);
+      repo.save.mockResolvedValue(user);
 
-    repo.create.mockReturnValue(createdUser);
-    repo.save.mockResolvedValue(createdUser);
-
-    const result = await service.createUser(userData.email, userData.password);
-
-    expect(repo.create).toHaveBeenCalledWith(userData);
-    expect(repo.save).toHaveBeenCalledWith(createdUser);
-    expect(result).toEqual(createdUser);
+      await expect(service.create(dto)).resolves.toEqual(user);
+      expect(repo.create).toHaveBeenCalledWith(dto);
+      expect(repo.save).toHaveBeenCalledWith(user);
+    });
   });
 
 
