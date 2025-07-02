@@ -9,32 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SensorData = void 0;
-const typeorm_1 = require("typeorm");
-let SensorData = class SensorData {
-};
-exports.SensorData = SensorData;
+exports.CreateSensorDataDto = void 0;
+const class_validator_1 = require("class-validator");
+class CreateSensorDataDto {
+    sensor_name;
+    value;
+    unit;
+}
+exports.CreateSensorDataDto = CreateSensorDataDto;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], SensorData.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], SensorData.prototype, "sensor_name", void 0);
+], CreateSensorDataDto.prototype, "sensor_name", void 0);
 __decorate([
-    (0, typeorm_1.Column)('decimal'),
+    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], SensorData.prototype, "value", void 0);
+], CreateSensorDataDto.prototype, "value", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], SensorData.prototype, "unit", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], SensorData.prototype, "timestamp", void 0);
-exports.SensorData = SensorData = __decorate([
-    (0, typeorm_1.Entity)()
-], SensorData);
-//# sourceMappingURL=sensor-data.entity.js.map
+], CreateSensorDataDto.prototype, "unit", void 0);

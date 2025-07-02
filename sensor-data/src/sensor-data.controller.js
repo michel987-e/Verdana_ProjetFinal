@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const sensor_data_service_1 = require("./sensor-data.service");
 const create_sensor_data_dto_1 = require("./dto/create-sensor-data.dto");
 let SensorDataController = class SensorDataController {
+    service;
     constructor(service) {
         this.service = service;
     }
@@ -55,4 +56,3 @@ exports.SensorDataController = SensorDataController = __decorate([
     (0, common_1.Controller)('sensor-data'),
     __metadata("design:paramtypes", [sensor_data_service_1.SensorDataService])
 ], SensorDataController);
-//# sourceMappingURL=sensor-data.controller.js.map

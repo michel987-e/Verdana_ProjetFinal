@@ -18,6 +18,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const sensor_data_entity_1 = require("./entities/sensor-data.entity");
 let SensorDataService = class SensorDataService {
+    repo;
     constructor(repo) {
         this.repo = repo;
     }
@@ -38,4 +39,3 @@ exports.SensorDataService = SensorDataService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(sensor_data_entity_1.SensorData)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], SensorDataService);
-//# sourceMappingURL=sensor-data.service.js.map

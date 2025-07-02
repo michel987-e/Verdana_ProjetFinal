@@ -22,4 +22,3 @@ exports.SensorDataModule = SensorDataModule = __decorate([
         providers: [sensor_data_service_1.SensorDataService],
     })
 ], SensorDataModule);
-//# sourceMappingURL=sensor-data.module.js.map

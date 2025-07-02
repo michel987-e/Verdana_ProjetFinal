@@ -108,18 +108,34 @@
 version: "3.8"
 
 services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+    networks:
+      - micro-services
+
   sensor-api:
     build:
       context: ./sensor-data
     ports:
-      - "3000:3000" 
+      - "3000:3000" # change 80 → 3000 si ton app écoute sur 3000
     env_file: ./sensor-data/.env
+    depends_on:
+      - sensor-db
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sensor.rule=PathPrefix(`/sensor`)"
       - "traefik.http.services.sensor.loadbalancer.server.port=3000"
-    depends_on:
-      - sensor-db
     networks:
       - micro-services
 
@@ -132,8 +148,7 @@ services:
     volumes:
       - ./sensor-data/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
       - sensor-db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # ⛔️ supprime les ports pour éviter le conflit avec le port local 5432
     networks:
       - micro-services
 

@@ -2,7 +2,7 @@ FROM node:20
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json tsconfig*.json ./
 RUN npm install
 
 COPY . .
@@ -10,4 +10,5 @@ COPY . .
 RUN npm run build
 
 EXPOSE 3000
+
 CMD ["node", "dist/main.js"]

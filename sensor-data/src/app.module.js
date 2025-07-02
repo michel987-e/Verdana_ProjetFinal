@@ -10,7 +10,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
-const sensor_data_module_1 = require("./sensor-datas/sensor-data.module");
+const sensor_data_module_1 = require("./sensor-data.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,4 +32,3 @@ exports.AppModule = AppModule = __decorate([
         ],
     })
 ], AppModule);
-//# sourceMappingURL=app.module.js.map

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { SensorDataModule } from './sensor-datas/sensor-data.module';
+import { SensorDataModule } from './sensor-data.module';
 
 @Module({
   imports: [
