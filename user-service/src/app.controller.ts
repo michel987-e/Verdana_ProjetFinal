@@ -4,6 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get()
   getStatus() {
-    return { status: 'API verdana cest op' };
+    return 'Users-service';
   }
 }
