@@ -64,9 +64,4 @@ export class AuthController {
       return res.status(HttpStatus.UNAUTHORIZED).json({error: err})
     }
   }
-  // @UseGuards(JwtAuthGuard)
-  // @Get('cookie')
-  // getCookie(@Req() req) {
-  //   return req.user;
-  // }
 }
