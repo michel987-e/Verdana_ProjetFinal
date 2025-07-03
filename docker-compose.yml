@@ -64,6 +64,7 @@ services:
       - "traefik.http.services.flower.loadbalancer.server.port=80"
     depends_on:
       - flower-db
+    command: npm run test
     networks:
       - micro-services
 
