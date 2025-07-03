@@ -1,112 +1,3 @@
-# services:
-#   traefik:
-#     image: traefik:v2.10
-#     command:
-#       - "--api.insecure=true"
-#       - "--providers.docker=true"
-#       - "--entrypoints.web.address=:80"
-#     ports:
-#       - "80:80"
-#       - "8080:8080"
-#     volumes:
-#       - "/var/run/docker.sock:/var/run/docker.sock"
-#     labels:
-#       - "traefik.enable=true"
-#     networks:
-#       - micro-services
-
-#   zookeeper:
-#     image: confluentinc/cp-zookeeper:7.4.4
-#     environment:
-#       ZOOKEEPER_CLIENT_PORT: 2181
-#       ZOOKEEPER_TICK_TIME: 2000
-#     ports:
-#       - 2181:2181
-#     networks:
-#       - micro-services
-
-#   kafka:
-#     image: confluentinc/cp-kafka:7.4.4
-#     depends_on:
-#       - zookeeper
-#     ports:
-#       - 9092:9092
-#     environment:
-#       KAFKA_BROKER_ID: 1
-#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-#       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#     networks:
-#       - micro-services
-
-#   user:
-#     build: ./api
-#     expose:
-#       - 80
-#     labels:
-#       - "traefik.enable=true"
-#       - "traefik.http.routers.users.rule=PathPrefix(`/users`)"
-#       - "traefik.http.services.users.loadbalancer.server.port=80"
-#     networks:
-#       - micro-services
-
-#   flower-api:
-#     build: ./flower-api
-#     expose:
-#       - 80
-#     env_file: ./flower-api/.env
-#     labels:
-#       - "traefik.enable=true"
-#       - "traefik.http.routers.flower.rule=PathPrefix(`/flower`)"
-#       - "traefik.http.services.flower.loadbalancer.server.port=80"
-#     depends_on:
-#       - flower-db
-#     networks:
-#       - micro-services
-
-#   flower-db:
-#     image: postgres:15
-#     env_file: ./flower-api/.env
-#     volumes:
-#       - ./flower-api/init.sql:/docker-entrypoint-initdb.d/init-flower.sql
-#       - ./flower-data:/var/lib/postgresql/data
-#     networks:
-#       - micro-services
-
-#   sensor-api:
-#     build: ./sensor-data
-#     expose:
-#       - 3000
-#     env_file: ./sensor-data/.env
-#     labels:
-#       - "traefik.enable=true"
-#       - "traefik.http.routers.sensor.rule=PathPrefix(`/sensor`)"
-#       - "traefik.http.services.sensor.loadbalancer.server.port=3000"
-#     depends_on:
-#       - sensor-db
-#     networks:
-#       - micro-services
-
-#   sensor-db:
-#     image: postgres:16
-#     environment:
-#       POSTGRES_USER: verdana
-#       POSTGRES_PASSWORD: secret
-#       POSTGRES_DB: verdana_db
-#     volumes:
-#       - ./sensor-data-service/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
-#       - ./sensor-data:/var/lib/postgresql/data
-#     networks:
-#       - micro-services
-
-# networks:
-#   micro-services:
-#     driver: bridge
-
-version: "3.8"
-
 services:
   traefik:
     image: traefik:v2.10
@@ -124,37 +15,90 @@ services:
     networks:
       - micro-services
 
-  sensor-api:
-    build:
-      context: ./sensor-data
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "3000:3000" # change 80 → 3000 si ton app écoute sur 3000
-    env_file: ./sensor-data/.env
+      - 2181:2181
+    networks:
+      - micro-services
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - micro-services
+
+  user:
+    build: ./api
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.users.rule=PathPrefix(`/users`)"
+      - "traefik.http.services.users.loadbalancer.server.port=80"
+    networks:
+      - micro-services
+
+  flower-api:
+    build: ./flower-api
+    expose:
+      - 80
+    env_file: ./flower-api/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flower.rule=PathPrefix(`/flower`)"
+      - "traefik.http.services.flower.loadbalancer.server.port=80"
+    depends_on:
+      - flower-db
+    networks:
+      - micro-services
+
+  flower-db:
+    image: postgres:15
+    env_file: ./flower-api/.env
+    volumes:
+      - ./flower-api/init.sql:/docker-entrypoint-initdb.d/init-flower.sql
+      - ./flower-data:/var/lib/postgresql/data
+    networks:
+      - micro-services
+
+  sensor:
+    build:
+      context: ./sensor
+    expose:
+      - 80
+    env_file: ./sensor/.env
     depends_on:
       - sensor-db
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sensor.rule=PathPrefix(`/sensor`)"
-      - "traefik.http.services.sensor.loadbalancer.server.port=3000"
+      - "traefik.http.services.sensor.loadbalancer.server.port=80"
     networks:
       - micro-services
 
   sensor-db:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: verdana
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: verdana_db
+    image: postgres:15
+    env_file: ./sensor/.env
     volumes:
-      - ./sensor-data/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
-      - sensor-db-data:/var/lib/postgresql/data
-    # ⛔️ supprime les ports pour éviter le conflit avec le port local 5432
+      - ./sensor/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
+      - ./sensor-db-data:/var/lib/postgresql/data
     networks:
       - micro-services
 
 networks:
   micro-services:
     driver: bridge
-
-volumes:
-  sensor-db-data:
