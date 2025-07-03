@@ -40,6 +40,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - micro-services
+      
   user:
     build: ./user-service
     expose:
@@ -71,7 +72,7 @@ services:
     env_file: ./flower-service/.env
     volumes:
       - ./flower-service/init.sql:/docker-entrypoint-initdb.d/init-flower.sql
-      - ./flower-data:/var/lib/postgresql/data
+      - flower-data:/var/lib/postgresql/data
     networks:
       - micro-services
 
@@ -107,9 +108,15 @@ services:
     env_file: ./sensor/.env
     volumes:
       - ./sensor/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
-      - ./sensor-data:/var/lib/postgresql/data
+      - sensor-data:/var/lib/postgresql/data
     networks:
       - micro-services
+
+volumes:
+  flower-data:
+    driver: local
+  sensor-data:
+    driver: local
 
 networks:
   micro-services:
