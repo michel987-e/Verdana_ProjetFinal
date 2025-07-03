@@ -8,6 +8,7 @@ import Home from './Home';
 import Plante from './plante3';
 import Profil from './Profil';
 import Deconnexion from './Deconnexion';
+import Connexion from './Connexion'
 import Securite from './Securite';
 import Gestion from './Gestion';
 import Notifications from './Notifications';
@@ -16,6 +17,7 @@ import InscriptionScreen from './InscriptionScreen';
 import GuestWelcome from './Info';
 import Info from './Info';
 import AddPlante from './AddPlante';
+
 
 const Stack = createStackNavigator();
 
@@ -30,6 +32,7 @@ export default function App() {
         <Stack.Screen name="plante3" component={Plante}  />
         <Stack.Screen name="Profil" component={Profil} />
         <Stack.Screen name="Securite" component={Securite} />
+        <Stack.Screen name="Connexion" component={Connexion} />
         <Stack.Screen name="Gestion" component={Gestion} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Support" component={Support} />
