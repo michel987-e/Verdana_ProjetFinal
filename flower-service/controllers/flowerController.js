@@ -112,10 +112,6 @@ exports.updateFlower = async (req, res) => {
       light_max
     } = req.body;
 
-    if (!user_id) {
-      return res.status(400).json({ error: "user_id are required." });
-    }
-
     const updatedFlower = await Flower.updateFlower(id, {
       user_id,
       name,
