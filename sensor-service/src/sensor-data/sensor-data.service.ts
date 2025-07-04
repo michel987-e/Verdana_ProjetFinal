@@ -4,6 +4,7 @@ import { UpdateSensorDatumDto } from './dto/update-sensor-datum.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SensorData } from './entities/sensor-datum.entity';
 import { Repository } from 'typeorm';
+import { producer } from '../../kafka/producer';
 
 @Injectable()
 export class SensorDataService {
@@ -14,7 +15,26 @@ export class SensorDataService {
 
   async create(createSensorDataDto: CreateSensorDataDto): Promise<SensorData> {
     const sensor = this.sensorRepository.create(createSensorDataDto);
-    return this.sensorRepository.save(sensor);
+    const saved = this.sensorRepository.save(sensor);
+
+    await producer.send({
+      topic: 'sensor-data-received',
+      messages: [
+        {
+          key: String((await saved).flower_id),
+          value: JSON.stringify({
+            id: (await saved).id,
+            flower_id: (await saved).flower_id,
+            temperature: (await saved).temperature,
+            humidity: (await saved).humidity,
+            soil: (await saved).soil,
+            light: (await saved).light,
+            timestamp: (await saved).timestamp,
+          }),
+        },
+      ],
+    });
+    return saved;
   }
 
   async findAll(): Promise<SensorData[]> {

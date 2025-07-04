@@ -50,6 +50,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.users.rule=PathPrefix(`/users`)"
       - "traefik.http.services.users.loadbalancer.server.port=80"
+    command: npm run test
     networks:
       - micro-services
 
