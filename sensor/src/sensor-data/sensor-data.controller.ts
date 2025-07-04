@@ -3,7 +3,7 @@ import { SensorDataService } from './sensor-data.service';
 import { CreateSensorDataDto } from './dto/create-sensor-datum.dto';
 import { UpdateSensorDatumDto } from './dto/update-sensor-datum.dto';
 
-@Controller('sensor-data')
+@Controller('sensor')
 export class SensorDataController {
   constructor(private readonly sensorDataService: SensorDataService) {}
 
