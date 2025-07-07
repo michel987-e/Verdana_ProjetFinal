@@ -17,23 +17,48 @@ export class SensorDataService {
     const sensor = this.sensorRepository.create(createSensorDataDto);
     const saved = this.sensorRepository.save(sensor);
 
-    await producer.send({
-      topic: 'sensor-data-received',
-      messages: [
-        {
-          key: String((await saved).flower_id),
-          value: JSON.stringify({
-            id: (await saved).id,
-            flower_id: (await saved).flower_id,
-            temperature: (await saved).temperature,
-            humidity: (await saved).humidity,
-            soil: (await saved).soil,
-            light: (await saved).light,
-            timestamp: (await saved).timestamp,
-          }),
-        },
-      ],
-    });
+    try {
+      await producer.send({
+        topic: 'sensor-data',
+        messages: [
+          {
+            key: String((await saved).flower_id),
+            value: JSON.stringify({
+              id: (await saved).id,
+              flower_id: (await saved).flower_id,
+              temperature: (await saved).temperature,
+              humidity: (await saved).humidity,
+              soil: (await saved).soil,
+              light: (await saved).light,
+              timestamp: (await saved).timestamp,
+            }),
+          },
+        ],
+      });
+    } catch (err) {
+      if (err.message.includes('disconnected')) {
+        await producer.connect();
+        await producer.send({
+          topic: 'sensor-data',
+          messages: [
+            {
+              key: String((await saved).flower_id),
+              value: JSON.stringify({
+                id: (await saved).id,
+                flower_id: (await saved).flower_id,
+                temperature: (await saved).temperature,
+                humidity: (await saved).humidity,
+                soil: (await saved).soil,
+                light: (await saved).light,
+                timestamp: (await saved).timestamp,
+              }),
+            },
+          ],
+        });
+      } else {
+        throw err;
+      }
+    }
     return saved;
   }
 

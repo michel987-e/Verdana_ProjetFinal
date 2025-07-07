@@ -13,12 +13,9 @@ async function bootstrap() {
     origin: 'http://localhost',
     credentials: true
   });
+  await connectProducer();
   await app.listen(process.env.PORT || 80);
   console.log(`🚀 Server running on http://localhost:${process.env.PORT || 80}`);
-  
-  (async () => {
-    await connectProducer();
-  })
 }
 
 bootstrap();

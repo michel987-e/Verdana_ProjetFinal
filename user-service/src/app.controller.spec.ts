@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Users-service"', () => {
-      expect(appController.getService()).toBe('Users-Service');
+      expect(appController.getService()).toBe('User-Service');
     });
   });
 });
