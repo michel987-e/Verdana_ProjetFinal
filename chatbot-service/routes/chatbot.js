@@ -8,7 +8,7 @@ router.post('/ask', (req, res) => {
   const { question } = req.body;
 
   if (!question) {
-    return res.status(400).json({ error: 'Veuillez fournir une question.' });
+    return res.status(400).json({ error: 'Give a question.' });
   }
 
   const knownPlants = ['ficus', 'cactus'];

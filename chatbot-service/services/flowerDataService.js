@@ -8,7 +8,7 @@ try {
   const data = fs.readFileSync(filePath, 'utf-8');
   plants = JSON.parse(data);
 } catch (err) {
-  console.error('Erreur lors du chargement des plantes :', err);
+  console.error(`Error while loading flower's data: `, err);
 }
 
 function findFlowerInfo(plantName) {
