@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, PermissionsAndroid, Platform, StatusBar } from 'react-native';
+import { Alert, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, PermissionsAndroid, StatusBar } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Location from 'expo-location';
-import { LineChart } from '@mui/x-charts/LineChart';
+import { useRoute } from '@react-navigation/native';
+
+import { Platform } from 'react-native';
+
+const getWSHost = () => {
+  return Platform.OS === 'ios' || Platform.OS === 'android'
+    ? '192.168.0.16'
+    : 'localhost';
+};
+const host = getWSHost();
+
 export default function PlanteScreen({ navigation }: { navigation: any }) {
   const [data, setData] = useState<{ temp?: number; hum?: number; lux?: number }>({});
   const [showMenu, setShowMenu] = useState(false);
@@ -12,12 +22,19 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
   const [activeTab, setActiveTab] = useState<'leaf' | 'settings'>('leaf');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const Stack = createStackNavigator();
+  const route = useRoute();
+  const plantId = (route.params as { plantId?: string })?.plantId;
 
   const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
 
   useEffect(() => {
     console.log('API KEY (expoConfig.extra):', apiKey);
-    const ws = new WebSocket('ws://192.168.0.16:8080');
+    const ws = new WebSocket(`ws://${host}:8080`);
+    ws.onopen = () => {
+      if (plantId) {
+        ws.send(JSON.stringify({ type: 'selectPlant', plantId }));
+      }
+    };
     ws.onmessage = event => {
       try {
         const incomingData = JSON.parse(event.data);
@@ -31,7 +48,7 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
     };
     ws.onclose = () => {};
     return () => ws.close();
-  }, []);
+  }, [plantId, host]);
 
   useEffect(() => {
     const getLocation = async () => {
@@ -285,19 +302,7 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
         <Text style={{ fontSize: 16, color: '#7F8C8D', textAlign: 'center', marginBottom: 16 }}>
           (Graphique à venir bouton voir plus ?)
         </Text>
-
-
-    <LineChart
-      xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-      series={[
-        {
-          data: [2, 5.5, 2, 8.5, 1.5, 5],
-        },
-      ]}
-      height={300}
-    />
-  
-
+        
       </View>
     </SafeAreaView>
   );

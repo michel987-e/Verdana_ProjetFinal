@@ -51,7 +51,7 @@ export default function Gestion({ navigation }: any) {
         <Text style={styles.menuItemText}>Conditions de service</Text>
         <Feather name="chevron-right" size={20} color="#7F8C8D" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={() => alert('Politique de confidentialité')}>
+      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Politique')}>
         <Text style={styles.menuItemText}>Politique de confidentialité</Text>
         <Feather name="chevron-right" size={20} color="#7F8C8D" />
       </TouchableOpacity>

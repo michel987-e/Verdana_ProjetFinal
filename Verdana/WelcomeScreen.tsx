@@ -11,6 +11,9 @@ export default function WelcomeScreen({ navigation }: any) {
   const welcomeOpacity = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const [haloBg, setHaloBg] = useState('#b6e2c6');
+  const textBlockPosition = useRef(new Animated.Value(0)).current;
+  const textBlockOpacity = useRef(new Animated.Value(1)).current;
+  const textBlockAppearOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.spring(logoPosition, {
@@ -43,6 +46,11 @@ export default function WelcomeScreen({ navigation }: any) {
       Animated.timing(welcomeOpacity, {
         toValue: 1,
         duration: 1000,
+        useNativeDriver: true,
+      }).start();
+      Animated.timing(textBlockAppearOpacity, {
+        toValue: 1,
+        duration: 1200,
         useNativeDriver: true,
       }).start();
     }, 2000);
@@ -78,6 +86,16 @@ export default function WelcomeScreen({ navigation }: any) {
           duration: 700,
           useNativeDriver: false,
         }),
+        Animated.timing(textBlockOpacity, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(textBlockPosition, {
+          toValue: 80,
+          duration: 700,
+          useNativeDriver: true,
+        }),
       ]).start(() => {
         navigation.replace('Home');
       });
@@ -99,27 +117,8 @@ export default function WelcomeScreen({ navigation }: any) {
       <View style={styles.centered}>
         <Animated.View
           style={[
-            styles.halo,
+            styles.potContainer,
             {
-              opacity: haloOpacity,
-              backgroundColor: haloBg,
-              shadowColor: '#74a860',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.18,
-              shadowRadius: 24,
-              transform: [
-                { scale: haloScale },
-                { translateY: logoPosition },
-              ],
-            },
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.logoContainer,
-            {
-              borderRadius: 80,
-              padding: 18,
               transform: [
                 { translateY: logoPosition },
                 { scale: logoScale },
@@ -128,27 +127,30 @@ export default function WelcomeScreen({ navigation }: any) {
           ]}
         >
           <Image
-            source={require('./assets/logo.png')}
-            style={styles.logo}
+            source={require('./assets/images/robot.png')}
+            style={styles.potImage}
             resizeMode="contain"
           />
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.welcomeTextContainer,
-            {
-              opacity: welcomeOpacity,
-              transform: [
-                {
-                  translateY: welcomeOpacity.interpolate({ inputRange: [0, 1], outputRange: [40, 0] }),
-                },
-              ],
-            },
-          ]}
-        >
-          <Text style={styles.welcomeText}>Bienvenue sur Verdana</Text>
+          <View style={[styles.bubble, styles.bubbleSun]}><Text style={styles.bubbleText}>Sun Light</Text></View>
+          <View style={[styles.bubble, styles.bubbleWater]}><Text style={styles.bubbleText}>Water Level</Text></View>
+          <View style={[styles.bubble, styles.bubbleHumidity]}><Text style={styles.bubbleText}>Humidity Level</Text></View>
         </Animated.View>
       </View>
+      <Animated.View
+        style={[
+          styles.textBlockBottom,
+          {
+            opacity: Animated.multiply(textBlockOpacity, textBlockAppearOpacity),
+            transform: [
+              { translateY: textBlockPosition },
+            ],
+          },
+        ]}
+      >
+        <Text style={styles.smartCare}><Text style={styles.smart}>Smart Care</Text> for</Text>
+        <Text style={styles.blossoms}>Blossoms</Text>
+        <Text style={styles.sloganHome}>Easily monitor and care for your plants{"\n"}with real-time updates.</Text>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -159,6 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   centered: {
     flex: 1,
@@ -184,22 +187,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     alignSelf: 'center',
   },
-  welcomeTextContainer: {
-    position: 'absolute',
-    top: 80,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  welcomeText: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#232323',
-    letterSpacing: 1,
-    textShadowColor: 'rgba(44,85,48,0.08)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
+  
   brand: {
     color: '#2C5530',
     fontWeight: 'bold',
@@ -212,5 +200,88 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.5,
     textAlign: 'center',
+  },
+  potContainer: {
+     position: 'absolute',
+  top: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    
+  },
+  potImage: {
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'transparent',
+  },
+  bubble: {
+    position: 'absolute',
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  bubbleText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#4e7d5a',
+  },
+  bubbleSun: {
+    left: -60,
+    top: 30,
+    backgroundColor: '#f7f7d4',
+  },
+  bubbleWater: {
+    right: -60,
+    top: 30,
+    backgroundColor: '#d4eafd',
+  },
+  bubbleHumidity: {
+    left: 10,
+    bottom: -18,
+    backgroundColor: '#e6f7e7',
+  },
+  textBlockBottom: {
+    position: 'absolute',
+    bottom: 250,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    width: '100%',
+    zIndex: 10,
+  },
+  textBlock: {
+    marginTop: 30,
+    alignItems: 'center',
+    width: '90%',
+  },
+  smartCare: {
+    fontSize: 28,
+    fontWeight: '600',
+    color: '#fff',
+    letterSpacing: 0.5,
+  },
+  smart: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  blossoms: {
+    fontSize: 32,
+    color: '#fff',
+    marginBottom: 8,
+    letterSpacing: 1.2,
+  },
+  sloganHome: {
+    fontSize: 15,
+    color: '#fff',
+    opacity: 0.7,
+    textAlign: 'center',
+    marginTop: 6,
+    lineHeight: 22,
   },
 });

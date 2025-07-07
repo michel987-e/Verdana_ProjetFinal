@@ -166,7 +166,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   activeNavItem: {
-    // Styles pour l'icône active
-    // Tu peux ajuster la couleur ou ajouter un fond, etc.
+    color: '#2C5530',
+    borderBottomWidth: 2,
+    borderBottomColor: '#2C5530',
   },
 });
