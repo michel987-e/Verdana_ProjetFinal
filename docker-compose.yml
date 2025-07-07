@@ -64,7 +64,6 @@ services:
       - "traefik.http.services.flower.loadbalancer.server.port=80"
     depends_on:
       - flower-db
-    command: npm run test
     networks:
       - micro-services
 
@@ -86,30 +85,44 @@ services:
       - "traefik.http.routers.chatbot.rule=PathPrefix(`/chatbot`)"
       - "traefik.http.services.chatbot.loadbalancer.server.port=80"
     depends_on:
-      - kafka
+      kafka:
+        condition: service_started
     networks:
       - micro-services
 
   sensor:
-    build: ./sensor
+    build: ./sensor-service
     expose:
       - 80
-    env_file: ./sensor/.env
+    env_file: ./sensor-service/.env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sensor.rule=PathPrefix(`/sensor`)"
       - "traefik.http.services.sensor.loadbalancer.server.port=80"
     depends_on:
-      - sensor-db
+      kafka:
+        condition: service_started
+      sensor-db:
+        condition: service_started
     networks:
       - micro-services
 
   sensor-db:
     image: postgres:15
-    env_file: ./sensor/.env
+    env_file: ./sensor-service/.env
     volumes:
-      - ./sensor/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
+      - ./sensor-service/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
       - sensor-data:/var/lib/postgresql/data
+    networks:
+      - micro-services
+
+  recommendation:
+    build: ./recommendation-service
+    depends_on:
+      kafka:
+        condition: service_started
+      sensor:
+        condition: service_started
     networks:
       - micro-services
 

@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node:lts
 WORKDIR /app
 COPY package*.json ./
 RUN npm install

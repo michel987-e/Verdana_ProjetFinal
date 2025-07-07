@@ -12,8 +12,8 @@ import Gestion from '../screens/Gestion';
 import Notifications from '../screens/Notifications';
 import Support from '../screens/Support';  
 import InscriptionScreen from '../screens/InscriptionScreen';
-import GuestWelcome from '../screens/Info';
 import Info from '../screens/Info';
+import AddPlante from '../screens/AddPlante';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +30,9 @@ export default function AppNavigator() {
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen name="Support" component={Support} />
             <Stack.Screen name="Inscription" component={InscriptionScreen} />
+            <Stack.Screen name="AddPlante" component={AddPlante} options={{ headerShown: false }} />
+
+
         </Stack.Navigator>
     );
 }
