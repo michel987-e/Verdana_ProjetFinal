@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from "class-validator";
+import { CountryCode } from "../countryCode";
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -17,5 +18,6 @@ export class CreateUserDto {
     city: string;
 
     @IsNotEmpty()
-    country: string;
+    @IsEnum(CountryCode)
+    country: CountryCode;
 }

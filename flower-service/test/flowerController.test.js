@@ -24,7 +24,7 @@ describe('flowerController', () => {
         id: 1,
         user_id: 5,
         name: 'Rose',
-        plant_type: 'Rosa',
+        species: 'Rosa',
         location: 'Balcony',
         temp_min: 10,
         temp_max: 25,
@@ -49,7 +49,7 @@ describe('flowerController', () => {
         id: 1,
         user_id: 5,
         name: 'Rose',
-        plant_type: 'Rosa',
+        species: 'Rosa',
         location: 'Balcony',
         temp_min: 10,
         temp_max: 25,
@@ -73,7 +73,7 @@ describe('flowerController', () => {
     const flower = {
       user_id: 1,
       name: 'Rose',
-      plant_type: 'Rosa',
+      species: 'Rosa',
       location: 'Balcony',
       temp_min: 10,
       temp_max: 30,
@@ -100,7 +100,7 @@ describe('flowerController', () => {
         id: 1,
         user_id: 5,
         name: 'Rose',
-        plant_type: 'Rosa',
+        species: 'Rosa',
         location: 'Balcony',
         temp_min: 10,
         temp_max: 25,
@@ -123,7 +123,7 @@ describe('flowerController', () => {
     const updated = {
       user_id: 2,
       name: 'Rosee',
-      plant_type: 'Rosa',
+      species: 'Rosa',
       location: 'Balcony',
       temp_min: 5,
       temp_max: 25,
@@ -147,7 +147,7 @@ describe('flowerController', () => {
   test('createFlower should return 400 if user_id is missing', async () => {
     const flower = {
       name: 'Rose',
-      plant_type: 'Rosa'
+      species: 'Rosa'
     };
 
     const res = await request(app).post('/flowers').send(flower);

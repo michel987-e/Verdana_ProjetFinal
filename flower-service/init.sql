@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS flowers (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     name VARCHAR(100),
-    plant_type VARCHAR(100),
+    species VARCHAR(100),
     location VARCHAR(100),
     temp_min FLOAT,
     temp_max FLOAT,
