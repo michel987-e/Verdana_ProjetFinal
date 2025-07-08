@@ -25,7 +25,25 @@ export default function Home({ navigation }: any) {
   const handleLogin = () => {
     alert(`Connexion tentée avec ${email} et ${password}`);
   };
-
+/*
+const handleLogin = async () => {
+  try {
+    const response = await fetch('https:/localhost/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      // Connexion réussie
+      navigation.navigate('Info');
+    } else {
+      alert('Email ou mot de passe incorrect');
+    }
+  } catch (error) {
+    alert('Erreur de connexion');
+  }
+};*/
   return (
     <Animated.View
       style={[
