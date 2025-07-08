@@ -128,7 +128,7 @@ services:
     build:
       context: ./sensor-data
     ports:
-      - "3000:3000" # change 80 → 3000 si ton app écoute sur 3000
+      - "3000:3000" 
     env_file: ./sensor-data/.env
     depends_on:
       - sensor-db
@@ -148,7 +148,32 @@ services:
     volumes:
       - ./sensor-data/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
       - sensor-db-data:/var/lib/postgresql/data
-    # ⛔️ supprime les ports pour éviter le conflit avec le port local 5432
+    networks:
+      - micro-services
+
+  notification-api:
+    build:
+      context: ./notification-service
+    ports:
+      - "3001:3000" 
+    env_file: ./notification-service/.env
+    depends_on:
+      - notification-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
+      - "traefik.http.services.notification.loadbalancer.server.port=3000"
+    networks:
+      - micro-services
+
+  notification-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: verdana
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: verdana_notifications
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
     networks:
       - micro-services
 
@@ -158,3 +183,4 @@ networks:
 
 volumes:
   sensor-db-data:
+  notification-db-data:
