@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import BottomNav from './components/BottomNav';
 
 const plantsData = [
   {
@@ -68,9 +69,7 @@ export default function Info({ navigation }: any) {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Mes plantes</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('AddPlante')} style={{ padding: 10 }}>
-            <Feather name="plus" size={24} color="#2C5530" />
-          </TouchableOpacity>
+          
         </View>
         
         <FlatList
@@ -80,15 +79,7 @@ export default function Info({ navigation }: any) {
           contentContainerStyle={styles.plantList}
         />
 
-        <View style={styles.bottomNav}>
-          <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={() => navigation.navigate('Info')}> 
-            <Feather name="home" size={24} color="#2C5530" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Gestion')}> 
-            <Feather name="settings" size={24} color="#2C5530" />
-          </TouchableOpacity>
-        </View>
+        <BottomNav navigation={navigation} />
       </View>
     </Animated.View>
   );
@@ -166,8 +157,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   activeNavItem: {
-    color: '#2C5530',
-    borderBottomWidth: 2,
-    borderBottomColor: '#2C5530',
   },
-});
+  addButton: {
+  width: 24,
+  height: 44,
+  backgroundColor: '#abdfab',
+  borderRadius: 22,
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginHorizontal: 8,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.1,
+  shadowRadius: 5,
+  elevation: 2,
+},
+})

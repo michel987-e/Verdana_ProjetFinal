@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import BottomNav from './components/BottomNav';
 
 export default function Gestion({ navigation }: any) {
   const navigateTo = (screenName: string) => {
@@ -8,67 +9,71 @@ export default function Gestion({ navigation }: any) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Feather name="arrow-left" size={24} color="#232323" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Parametres</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
-      <View style={styles.profileSection}>
-        <Image
-          source={require('./assets/images/photo.png')} 
-          style={styles.profileImage}
-        />
-        <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>nom</Text>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Feather name="arrow-left" size={24} color="#232323" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Parametres</Text>
+          <View style={{ width: 24 }} />
         </View>
-      </View>
 
-      <Text style={styles.sectionTitle}>Compte</Text>
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Profil')}>
-        <Text style={styles.menuItemText}>Informations personnelles</Text>
-        <Feather name="chevron-right" size={20} color="#7F8C8D" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={() => alert('Changer le mot de passe')}>
-        <Text style={styles.menuItemText}>Changer votre mot de passe</Text>
-        <Feather name="chevron-right" size={20} color="#7F8C8D" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Notifications')}>
-        <Text style={styles.menuItemText}>Notifications</Text>
-        <Feather name="chevron-right" size={20} color="#7F8C8D" />
-      </TouchableOpacity>
+        <View style={styles.profileSection}>
+          <Image
+            source={require('./assets/images/photo.png')} 
+            style={styles.profileImage}
+          />
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>nom</Text>
+          </View>
+        </View>
 
-      <Text style={styles.sectionTitle}>Support</Text>
-      
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Support')}>
-        <Text style={styles.menuItemText}>Contactez-Nous</Text>
-        <Feather name="chevron-right" size={20} color="#7F8C8D" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={() => alert('Conditions de service')}>
-        <Text style={styles.menuItemText}>Conditions de service</Text>
-        <Feather name="chevron-right" size={20} color="#7F8C8D" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Politique')}>
-        <Text style={styles.menuItemText}>Politique de confidentialité</Text>
-        <Feather name="chevron-right" size={20} color="#7F8C8D" />
-      </TouchableOpacity>
+        <Text style={styles.sectionTitle}>Compte</Text>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Profil')}>
+          <Text style={styles.menuItemText}>Informations personnelles</Text>
+          <Feather name="chevron-right" size={20} color="#7F8C8D" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => alert('Changer le mot de passe')}>
+          <Text style={styles.menuItemText}>Changer votre mot de passe</Text>
+          <Feather name="chevron-right" size={20} color="#7F8C8D" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Notifications')}>
+          <Text style={styles.menuItemText}>Notifications</Text>
+          <Feather name="chevron-right" size={20} color="#7F8C8D" />
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={() => {
-                Alert.alert(
-                  "Déconnexion",
-                  "Voulez-vous vous déconnecter ?",
-                  [
-                    { text: "Annuler", style: "cancel" },
-                    { text: "Oui", onPress: () => navigation.navigate('Home') }
-                  ]
-                );
-              }}>
-        <Text style={styles.logoutButtonText}>Decoonexion</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <Text style={styles.sectionTitle}>Support</Text>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Support')}>
+          <Text style={styles.menuItemText}>Contactez-Nous</Text>
+          <Feather name="chevron-right" size={20} color="#7F8C8D" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => alert('Conditions de service')}>
+          <Text style={styles.menuItemText}>Conditions de service</Text>
+          <Feather name="chevron-right" size={20} color="#7F8C8D" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Politique')}>
+          <Text style={styles.menuItemText}>Politique de confidentialité</Text>
+          <Feather name="chevron-right" size={20} color="#7F8C8D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={() => {
+                  Alert.alert(
+                    "Déconnexion",
+                    "Voulez-vous vous déconnecter ?",
+                    [
+                      { text: "Annuler", style: "cancel" },
+                      { text: "Oui", onPress: () => navigation.navigate('Home') }
+                    ]
+                  );
+                }}>
+          <Text style={styles.logoutButtonText}>Decoonexion</Text>
+        </TouchableOpacity>
+                
+      </ScrollView>
+      <BottomNav navigation={navigation} />
+    </View>
   );
 }
 
@@ -76,6 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FAFAFA',
+    
   },
   header: {
     flexDirection: 'row',
