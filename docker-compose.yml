@@ -40,7 +40,20 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - micro-services
-      
+
+  front:
+    build: ./front
+    ports:
+      - 19000:19000
+      - 19001:19001
+      - 19002:19002
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    labels:
+      - com.host.description=label
+    networks:
+      - micro-services
+
   user:
     build: ./user-service
     expose:

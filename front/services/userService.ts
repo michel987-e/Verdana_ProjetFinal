@@ -14,17 +14,31 @@ export const updateMyUser = async (dataToModify: string, data: string) => {
     })
 }
 
-export const loginUser = async (email: string, password: string) => {
-    return await api.post('/users/auth/login', {
+export interface LoginReponse {
+    token: string;
+}
+
+export const loginUser = async (email: string, password: string): Promise<LoginReponse> => {
+    try {
+        const response = await api.post('/users/auth/login', {
         email: email,
         password: password
     })
-    .then((response) => response.data)
-    .catch((err) => console.log(err))
+    return response.data;
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
 }
 
 export const logoutUser = async () => {
     return await api.post('/users/auth/logout')
     .then((response) => response.data)
     .catch((err) => console.log(err))
+}
+
+export const registerUser = async (email: string, password: string) => {
+    return await api.post('users/auth/register')
+    .then((response) => response.data)
+    .catch((err) => alert(err))
 }

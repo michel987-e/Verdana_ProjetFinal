@@ -29,7 +29,7 @@ const plantsData = [
   },
 ];
 
-export default function Info({ navigation }: any) {
+export default function Home({ navigation }: any) {
   const renderPlantItem = ({ item }: { item: typeof plantsData[0] }) => (
     <TouchableOpacity style={styles.plantCard} onPress={() => navigation.navigate('plante3', { plantId: item.id })}>
       <Image source={item.image} style={styles.plantImage} />

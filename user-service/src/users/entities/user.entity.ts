@@ -5,7 +5,6 @@ import { CountryCode } from '../countryCode';
 export class User {
   @PrimaryGeneratedColumn({
     type: 'int',
-    name: 'id',
   })
   id: number;
 
@@ -13,14 +12,14 @@ export class User {
     type: 'varchar',
     length: 255,
     unique: true,
-    nullable: false,
+    nullable: false
   })
   email: string;
 
   @Column({
     type: 'varchar',
     length: 255,
-    nullable: false,
+    nullable: false
   })
   password: string;
 

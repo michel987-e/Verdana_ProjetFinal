@@ -97,7 +97,7 @@ export default function WelcomeScreen({ navigation }: any) {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        navigation.replace('Home');
+        navigation.replace('Login');
       });
     }, 5000);
 
@@ -127,7 +127,7 @@ export default function WelcomeScreen({ navigation }: any) {
           ]}
         >
           <Image
-            source={require('../assets/images/robot.png')}
+            source={require('../assets/images/verdana.png')}
             style={styles.potImage}
             resizeMode="contain"
           />
