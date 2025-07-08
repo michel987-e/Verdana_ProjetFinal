@@ -1,26 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Notification } from './entities/notification.entity';
-import { CreateNotificationDto } from './dto/create-notification.dto';
+import { firebaseMessaging } from '../firebase/firebase-admin';
 
 @Injectable()
 export class NotificationService {
-  constructor(
-    @InjectRepository(Notification)
-    private repo: Repository<Notification>
-  ) {}
+  private tokens: string[] = [];
 
-  create(dto: CreateNotificationDto) {
-    const notif = this.repo.create(dto);
-    return this.repo.save(notif);
+  registerToken(token: string) {
+    if (!this.tokens.includes(token)) {
+      this.tokens.push(token);
+      console.log('Token enregistré :', token);
+    }
   }
 
-  findAll() {
-    return this.repo.find();
+  async sendToToken(token: string, title: string, body: string) {
+    const message = {
+      token,
+      notification: { title, body },
+    };
+
+    try {
+      await firebaseMessaging.send(message);
+      console.log('Notification envoyée à', token);
+    } catch (err) {
+      console.error('Erreur d’envoi :', err);
+    }
   }
 
-  findOne(id: number) {
-    return this.repo.findOneBy({ id });
+  getAllTokens() {
+    return this.tokens;
   }
 }
