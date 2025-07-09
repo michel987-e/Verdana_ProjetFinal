@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Text, StyleSheet, TouchableOpacity, TextInput, Animated, View
 } from 'react-native';
-import { registerUser } from '../../services/userService';
+import { loginUser, registerUser } from '../../services/userService';
+import { saveSecureItem } from '../../services/secureStore';
 
 export default function Login({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -27,9 +28,20 @@ export default function Login({ navigation }: any) {
     ]).start();
   }, []);
 
-  const handleLogin = () => {
-    const newUser = registerUser(email, password)
-    alert(`newUser : ${newUser}`);
+  const handleRegister = async () => {
+    const data = await registerUser(email, password)
+    alert(`newUser : ${data}`);
+
+    try {
+      const data = await loginUser(email, password);
+      if (data.token) {
+        await saveSecureItem('auth_token', data.token)
+        alert("Let's GOOO")
+        navigation.navigate("Home")
+      }
+    } catch(err) {
+      alert(`Login : ${err}`)
+    }
   };
   
   const isEmailValid = email.length > 0;
@@ -103,7 +115,7 @@ export default function Login({ navigation }: any) {
           styles.loginButton,
           !canSubmit && styles.loginButtonDisabled,
         ]}
-        onPress={handleLogin}
+        onPress={handleRegister}
         disabled={!canSubmit}
       >
         <Text style={styles.loginButtonText}>S'inscrire</Text>

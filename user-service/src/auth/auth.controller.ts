@@ -34,8 +34,7 @@ export class AuthController {
       sameSite: 'strict',
       secure: false
     })
-
-    return {message: 'Connected'}
+    return {message: 'Connected', token: token}
   }
 
   @Post('logout')
