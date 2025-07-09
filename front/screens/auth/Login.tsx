@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { loginUser } from '../../services/userService';
+import { saveSecureItem } from '../../services/secureStore';
 
-export default function Home({ navigation }: any) {
+export default function Login({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateYAnim = useRef(new Animated.Value(40)).current;
 
@@ -22,8 +25,15 @@ export default function Home({ navigation }: any) {
     ]).start();
   }, []);
 
-  const handleLogin = () => {
-    alert(`Connexion tentée avec ${email} et ${password}`);
+  const handleLogin = async () => {
+    try {
+      const data = await loginUser(email, password);
+      if (data.token) {
+        await saveSecureItem('auth_token', data.token)
+      }
+    } catch(err) {
+      alert(`Login : ${err}`)
+    }
   };
 
   return (
@@ -36,7 +46,7 @@ export default function Home({ navigation }: any) {
         },
       ]}
     >
-      <Text style={styles.welcomeTitle}>Bienvenue</Text>
+      <Text style={styles.welcomeTitle}>Connection</Text>
 
       <TextInput
         style={styles.input}
@@ -60,12 +70,8 @@ export default function Home({ navigation }: any) {
         <Text style={styles.loginButtonText}>Se connecter</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Inscription')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.signUpText}>Vous n'avez pas de compte? Inscrivez-vous</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.guestButton} onPress={() => navigation.navigate('Info')}>
-        <Text style={styles.guestButtonText}>Continuer en tant qu'invite</Text>
       </TouchableOpacity>
     </Animated.View>
   );

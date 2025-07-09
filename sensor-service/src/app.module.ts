@@ -5,6 +5,7 @@ import { SensorDataModule } from './sensor-data/sensor-data.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { join } from 'path';
         synchronize: true,
       }),
     }),
-    SensorDataModule
+    SensorDataModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,7 +6,7 @@ describe('flowerModel', () => {
   const testFlower = {
     user_id: 1,
     name: 'Rose',
-    plant_type: 'Rosa',
+    species: 'Rosa',
     location: 'Balcony',
     temp_min: 10,
     temp_max: 30,
