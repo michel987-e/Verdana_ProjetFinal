@@ -2,8 +2,8 @@ import axios from 'axios';
 import { getSecureItem } from './secureStore';
 
 const config = {
- baseURL: 'http://localhost:80',
- domain: 'localhost',
+ baseURL: 'http://10.0.2.2:80',
+//  domain: 'localhost',
 };
 
 const api = axios.create({
