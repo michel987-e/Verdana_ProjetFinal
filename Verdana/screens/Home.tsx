@@ -114,17 +114,4 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     marginBottom: 30,
   },
-  guestButton: {
-    backgroundColor: '#2C5530',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginHorizontal: 10,
-    marginTop: 20,
-  },
-  guestButtonText: {
-    color: '#000',
-    fontSize: 18,
-    fontWeight: '600',
-  },
 })
