@@ -1,5 +1,5 @@
 import api from "./api"
-import { LoginReponse } from "./responseInterface"
+import { LoginReponse, LogoutResponse, RegisterReponse } from "./responseInterface"
 
 export const getAllUser = async () => {
     return await api.get('/users').then((response) => response.data)
@@ -18,23 +18,44 @@ export const updateMyUser = async (dataToModify: string, data: string) => {
 export const loginUser = async (email: string, password: string): Promise<LoginReponse> => {
     try {
         const response = await api.post('/users/auth/login', {
-        email: email,
-        password: password
-    })
-    return response.data;
-    } catch (err) {
-        throw err
+            email: email,
+            password: password
+        })
+        return response.data;
+    } catch (err: any) {
+        let message = "Erreur lors de la connexion."
+        if (err.response?.data?.message) {
+            message = err.response.data.message
+        }  
+        throw new Error(message);
+    }
+};
+
+export const registerUser = async (email: string, password: string): Promise<RegisterReponse> => {
+    try {
+        const response = await api.post('/users/auth/register', {
+            email: email,
+            password: password
+        })
+        return response.data;
+    } catch (err: any) {
+        let message = "Erreur lors de l'inscription."
+        if (err.response?.data?.message) {
+            message = err.response.data.message
+        }  
+        throw new Error(message);
     }
 }
 
-export const registerUser = async (email: string, password: string) => {
-    return await api.post('users/auth/register')
-    .then((response) => response.data)
-    .catch((err) => alert(err))
-}
-
-export const logoutUser = async () => {
-    return await api.post('/users/auth/logout')
-    .then((response) => response.data)
-    .catch((err) => console.log(err))
+export const logoutUser = async (): Promise<LogoutResponse> => {
+    try {
+        const response = await api.post('/users/auth/logout')
+        return response.data;
+    } catch (err: any) {
+        let message = "Erreur lors de la deconnexion."
+        if (err.response?.data?.message) {
+            message = err.response.data.message
+        }
+        throw new Error(message);
+    }
 }

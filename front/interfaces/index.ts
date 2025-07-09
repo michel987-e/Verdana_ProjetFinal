@@ -1,20 +1,20 @@
-export enum CountryCode {
+export enum ECountryCode {
   FR = "FR",
   US = "US",
   DE = "DE",
   JP = "JP"
 }
 
-export interface User {
+export interface IUser {
     id: number,
     email: string,
     password: string,
     name: string,
     city: string,
-    country: CountryCode
+    country: ECountryCode
 }
 
-export interface Flower {
+export interface IFlower {
     id: number,
     user_id: number,
     name: string,
@@ -30,7 +30,7 @@ export interface Flower {
     light_max: number
 }
 
-export interface Sensor {
+export interface ISensor {
     id: number,
     flower_id: number,
     temperature: number,

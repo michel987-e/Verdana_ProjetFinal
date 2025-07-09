@@ -26,16 +26,26 @@ export default function Login({ navigation }: any) {
   }, []);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Veuillez remplir tous les champs.");
+      return;
+    }
+
     try {
       const data = await loginUser(email, password);
       if (data.token) {
-        await saveSecureItem('auth_token', data.token)
-        navigation.navigate("Home")
+        await saveSecureItem('auth_token', data.token);
+        navigation.navigate("Home");
       }
-    } catch(err) {
-      alert(`Problème de connexion`)
+    } catch (err: any) {
+      alert(err.message);
     }
   };
+
+
+  const isEmailValid = email.length > 0;
+  const isPasswordValid = password.length > 0;
+  const canSubmit = isEmailValid && isPasswordValid;
 
   return (
     <Animated.View
@@ -47,10 +57,13 @@ export default function Login({ navigation }: any) {
         },
       ]}
     >
-      <Text style={styles.welcomeTitle}>Connection</Text>
+      <Text style={styles.welcomeTitle}>Connexion</Text>
 
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          !isEmailValid && styles.inputError,
+        ]}
         placeholder="Email"
         placeholderTextColor="#2C5530"
         value={email}
@@ -59,7 +72,10 @@ export default function Login({ navigation }: any) {
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          !isPasswordValid && styles.inputError,
+        ]}
         placeholder="Mot de passe"
         placeholderTextColor="#2C5530"
         value={password}
@@ -67,7 +83,14 @@ export default function Login({ navigation }: any) {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+      <TouchableOpacity
+        style={[
+          styles.loginButton,
+          !canSubmit && styles.loginButtonDisabled
+          ]}
+        onPress={handleLogin}
+        disabled={!canSubmit}
+      >
         <Text style={styles.loginButtonText}>Se connecter</Text>
       </TouchableOpacity>
 
@@ -100,6 +123,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     color: '#2C5530',
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  inputError: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
   loginButton: {
     width: '80%',
@@ -109,6 +141,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#A5D6A7',
   },
   loginButtonText: {
     color: '#000',

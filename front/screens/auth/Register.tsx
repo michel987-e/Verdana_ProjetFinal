@@ -29,18 +29,20 @@ export default function Login({ navigation }: any) {
   }, []);
 
   const handleRegister = async () => {
-    const data = await registerUser(email, password)
-    alert(`newUser : ${data}`);
+    if (!email || !password) {
+      alert("Veuillez remplir tous les champs.");
+      return;
+    }
 
     try {
+      await registerUser(email, password);
       const data = await loginUser(email, password);
       if (data.token) {
-        await saveSecureItem('auth_token', data.token)
-        alert("Let's GOOO")
-        navigation.navigate("Home")
+        await saveSecureItem('auth_token', data.token);
+        navigation.navigate("Home");
       }
-    } catch(err) {
-      alert(`Login : ${err}`)
+    } catch (err: any) {
+      alert(err.message);
     }
   };
   
@@ -78,7 +80,7 @@ export default function Login({ navigation }: any) {
       <TextInput
         style={[
           styles.input,
-          !isPasswordValid && password.length > 0 && styles.inputError,
+          !isPasswordValid && styles.inputError,
         ]}
         placeholder="Mot de passe"
         placeholderTextColor="#2C5530"
@@ -86,7 +88,7 @@ export default function Login({ navigation }: any) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      {!isPasswordValid && password.length > 0 && (
+      {!isPasswordValid && (
         <Text style={styles.errorText}>
           Le mot de passe doit contenir au moins 8 caractères.
         </Text>
@@ -112,13 +114,13 @@ export default function Login({ navigation }: any) {
 
       <TouchableOpacity
         style={[
-          styles.loginButton,
-          !canSubmit && styles.loginButtonDisabled,
+          styles.registerButton,
+          !canSubmit && styles.registerButtonDisabled,
         ]}
         onPress={handleRegister}
         disabled={!canSubmit}
       >
-        <Text style={styles.loginButtonText}>S'inscrire</Text>
+        <Text style={styles.registerButtonText}>S'inscrire</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
   },
-  loginButton: {
+  registerButton: {
     width: '80%',
     backgroundColor: '#28B463',
     paddingVertical: 15,
@@ -168,10 +170,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
   },
-  loginButtonDisabled: {
+  registerButtonDisabled: {
     backgroundColor: '#A5D6A7',
   },
-  loginButtonText: {
+  registerButtonText: {
     color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
