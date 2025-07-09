@@ -1,68 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Animated } from 'react-native';
-import { FlatList, Dimensions, Image } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 
 export default function Home({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateYAnim = useRef(new Animated.Value(40)).current;
-  const scrollX = useRef(new Animated.Value(0)).current;
-
-const renderItem = ({ item, index }: any) => {
-  if (item.addCard) {
-    return (
-      <View style={[styles.card, styles.addCard]}>
-        <TouchableOpacity onPress={() => alert('Ajouter une carte')}>
-          <Text style={styles.addText}>+</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  const inputRange = [
-    (index - 1) * ITEM_WIDTH,
-    index * ITEM_WIDTH,
-    (index + 1) * ITEM_WIDTH,
-  ];
-
-  const scale = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.8, 1, 0.8],
-    extrapolate: 'clamp',
-  });
-
-  const opacity = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.4, 1, 0.4],
-    extrapolate: 'clamp',
-  });
-
-  return (
-    <Animated.View style={[styles.card, { transform: [{ scale }], opacity }]}>
-      <Text style={styles.cardTitle}>{item.title}</Text>
-    </Animated.View>
-  );
-};
-
-<Animated.FlatList
-  data={data}
-  keyExtractor={(item) => item.id}
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  snapToInterval={ITEM_WIDTH}
-  decelerationRate="fast"
-  bounces={false}
-  onScroll={Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: true }
-  )}
-  contentContainerStyle={{ paddingHorizontal: SPACER }}
-  renderItem={renderItem}
-/>
-
 
   useEffect(() => {
     Animated.parallel([
@@ -98,7 +41,7 @@ const renderItem = ({ item, index }: any) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor="#2C5530"24
+        placeholderTextColor="#2C5530"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -184,32 +127,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-
-  card: {
-  width: ITEM_WIDTH,
-  height: 200,
-  borderRadius: 20,
-  backgroundColor: '#DFFFD6',
-  marginHorizontal: 10,
-  justifyContent: 'center',
-  alignItems: 'center',
-  shadowColor: '#000',
-  shadowOpacity: 0.2,
-  shadowOffset: { width: 0, height: 5 },
-  shadowRadius: 10,
-},
-cardTitle: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: '#2C5530',
-},
-addCard: {
-  backgroundColor: '#B8E986',
-},
-addText: {
-  fontSize: 40,
-  fontWeight: 'bold',
-  color: '#2C5530',
-}
-
-});
+})
