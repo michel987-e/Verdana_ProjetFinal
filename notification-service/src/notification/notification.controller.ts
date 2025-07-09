@@ -2,7 +2,7 @@ import { Controller, Post, Body, Get } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { RegisterTokenDto } from './dto/register-token.dto';
 
-@Controller('notifications')
+@Controller('notification')
 export class NotificationController {
   constructor(private readonly service: NotificationService) {}
 

@@ -4,9 +4,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api');
-
-  await app.listen(3000);
-  console.log(`Notification service running at http://localhost:3000/api`);
+  await app.listen(80);
+  console.log(`Notification service running at http://localhost:80`);
 }
 bootstrap();
