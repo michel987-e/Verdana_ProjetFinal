@@ -114,4 +114,4 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     marginBottom: 30,
   },
-})
+});
