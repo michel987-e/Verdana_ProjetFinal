@@ -2,24 +2,51 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 
 @Entity()
 export class SensorData {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({
+    type: 'int',
+  })
   id: number;
 
-  @Column('int')
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
   flower_id: number;
 
-  @Column('decimal')
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+  })
   temperature: number;
 
-  @Column('decimal')
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+  })
   humidity: number;
 
-  @Column('decimal')
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+  })
   light: number;
 
-  @Column('decimal')
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+  })
   soil: number;
 
-  @CreateDateColumn()
-  timestamp!: Date;
+  @CreateDateColumn({
+    type: 'time with time zone',
+  })
+  timestamp: Date;
 }

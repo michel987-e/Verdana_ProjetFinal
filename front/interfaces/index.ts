@@ -1,0 +1,39 @@
+export enum CountryCode {
+  FR = "FR",
+  US = "US",
+  DE = "DE",
+  JP = "JP"
+}
+
+export interface User {
+    id: number,
+    email: string,
+    password: string,
+    name: string,
+    city: string,
+    country: CountryCode
+}
+
+export interface Flower {
+    id: number,
+    user_id: number,
+    name: string,
+    species: string,
+    location: string,
+    temp_min: number,
+    temp_max: number,
+    humidity_min: number,
+    humidity_max: number,
+    soil_min: number,
+    soil_max: number,
+    light_min: number,
+    light_max: number
+}
+
+export interface Sensor {
+    id: number,
+    flower_id: number,
+    temperature: number,
+    light: number,
+    soil: number
+}
