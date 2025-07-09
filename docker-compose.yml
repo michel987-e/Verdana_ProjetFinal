@@ -126,34 +126,8 @@ services:
     image: postgres:15
     env_file: ./sensor-service/.env
     volumes:
-      - ./sensor-data/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
-      - sensor-db-data:/var/lib/postgresql/data
-    networks:
-      - micro-services
-
-  notification-api:
-    build:
-      context: ./notification-service
-    ports:
-      - "3001:3000" 
-    env_file: ./notification-service/.env
-    depends_on:
-      - notification-db
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
-      - "traefik.http.services.notification.loadbalancer.server.port=3000"
-    networks:
-      - micro-services
-
-  notification-db:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: verdana
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: verdana_notifications
-    volumes:
-      - notification-db-data:/var/lib/postgresql/data
+      - ./sensor-service/init.sql:/docker-entrypoint-initdb.d/init-sensor.sql
+      - sensor-data:/var/lib/postgresql/data
     networks:
       - micro-services
 
@@ -167,16 +141,40 @@ services:
     networks:
       - micro-services
 
+  notification:
+    build: ./notification-service
+    expose:
+      - 80
+    env_file: ./notification-service/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
+      - "traefik.http.services.notification.loadbalancer.server.port=80"
+    depends_on:
+      kafka:
+        condition: service_started
+      notification-db:
+        condition: service_started
+    networks:
+      - micro-services
+
+  notification-db:
+    image: postgres:15
+    env_file: ./notification-service/.env
+    volumes:
+      - ./notification-service/init.sql:/docker-entrypoint-initdb.d/init-notification.sql
+      - notification-data:/var/lib/postgresql/data
+    networks:
+      - micro-services
+
 volumes:
   flower-data:
     driver: local
   sensor-data:
     driver: local
+  notification-data:
+    driver: local
 
 networks:
   micro-services:
     driver: bridge
-
-volumes:
-  sensor-db-data:
-  notification-db-data:
