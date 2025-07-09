@@ -1,0 +1,16 @@
+[
+  {
+    "name": "ficus",
+    "light": "Lumière indirecte",
+    "water": "Arroser une fois par semaine",
+    "temperature": "Entre 18 et 24°C",
+    "tips": "Éviter les courants d’air"
+  },
+  {
+    "name": "cactus",
+    "light": "Plein soleil",
+    "water": "Arroser une fois toutes les deux semaines",
+    "temperature": "Entre 20 et 30°C",
+    "tips": "Ne pas trop arroser"
+  }
+]
