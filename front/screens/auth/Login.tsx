@@ -30,11 +30,10 @@ export default function Login({ navigation }: any) {
       const data = await loginUser(email, password);
       if (data.token) {
         await saveSecureItem('auth_token', data.token)
-        alert("Let's GOOO")
         navigation.navigate("Home")
       }
     } catch(err) {
-      alert(`Login : ${err}`)
+      alert(`Problème de connexion`)
     }
   };
 

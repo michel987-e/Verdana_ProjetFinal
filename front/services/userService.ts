@@ -23,7 +23,6 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
     })
     return response.data;
     } catch (err) {
-        console.log(err)
         throw err
     }
 }
