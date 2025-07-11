@@ -13,3 +13,14 @@ export interface RegisterReponse {
 export interface LogoutResponse {
     message: string;
 }
+
+export interface JwtPayload {
+    email: string;
+    sub: number;
+    iat: number;
+    exp: number;
+}
+export interface ValidateResponse {
+    valid: boolean;
+    payload: JwtPayload;
+}

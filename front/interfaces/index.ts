@@ -8,10 +8,9 @@ export enum ECountryCode {
 export interface IUser {
     id: number,
     email: string,
-    password: string,
-    name: string,
-    city: string,
-    country: ECountryCode
+    name: string | null,
+    city: string | null,
+    country: ECountryCode | string
 }
 
 export interface IFlower {

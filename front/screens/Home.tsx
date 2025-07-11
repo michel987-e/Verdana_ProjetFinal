@@ -60,7 +60,7 @@ export default function Home({ navigation }: any) {
           <Feather name="home" size={24} color="#2C5530" />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Gestion')}> 
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Parametres')}> 
           <Feather name="settings" size={24} color="#2C5530" />
         </TouchableOpacity>
       </View>

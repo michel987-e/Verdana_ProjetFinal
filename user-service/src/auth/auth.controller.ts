@@ -24,7 +24,6 @@ export class AuthController {
     @Body() body: { email: string, password: string },
     @Res({ passthrough: true }) res: Response) {
     const user = await this.authService.validateUser(body.email, body.password);
-    console.log(user)
     if (!user) {
       throw new UnauthorizedException('Identifiants incorrects');
     }

@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,22 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.usersRepository.update(id, updateUserDto);
     return this.findOne(id);
+  }
+
+  async changePassword(id: number, lasttPassword: string, newPassword: string) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    console.log(user);
+    if (!user) {
+      throw new NotFoundException("Utilisateur non trouvé.");
+    }
+    const isOldPasswordValid = await bcrypt.compare(lasttPassword, user.password);
+    console.log(isOldPasswordValid);
+    if (!isOldPasswordValid) {
+      throw new BadRequestException("Ancien mot de passe incorrect.");
+    }
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    console.log(hashedNewPassword);
+    return this.update(id, { password: hashedNewPassword });
   }
 
   async remove(id: number): Promise<void> {

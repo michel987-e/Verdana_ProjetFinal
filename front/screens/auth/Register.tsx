@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Text, StyleSheet, TouchableOpacity, TextInput, Animated, View
 } from 'react-native';
-import { loginUser, registerUser } from '../../services/userService';
+import { loginUser, registerUser } from '../../services/authService';
 import { saveSecureItem } from '../../services/secureStore';
 
 export default function Login({ navigation }: any) {
