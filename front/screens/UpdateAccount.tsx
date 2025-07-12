@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { changePassword, updateMyUser } from '../services/userService';
+import { changePassword, updateUser } from '../services/userService';
 import { validateToken } from '../services/authService';
 
 export default function EditProfileField({ route, navigation }: any) {
@@ -29,7 +29,7 @@ export default function EditProfileField({ route, navigation }: any) {
                 Alert.alert("Succès", "Mot de passe mis à jour");
                 navigation.goBack();
             } else {
-                await updateMyUser(field, inputValue);
+                await updateUser(data.payload.sub, field, inputValue);
                 Alert.alert("Succès", `${label} mis à jour`);
                 navigation.goBack();
             }

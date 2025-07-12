@@ -31,10 +31,21 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Put('update/:id')
   @HttpCode(HttpStatus.OK)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('password')
+  @HttpCode(HttpStatus.OK)
+  password(@Req() req, @Body() changePasswordDto: ChangePasswordDto) {
+    return this.usersService.changePassword(
+      req.user.sub,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,12 +55,4 @@ export class UsersController {
     return this.usersService.remove(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Put('password')
-  @HttpCode(HttpStatus.OK)
-  changePassword(@Req() req: Request, @Body() changePasswordDto: ChangePasswordDto) {
-    console.log("test password");
-    const {oldPassword, newPassword} = changePasswordDto;
-    // return this.usersService.changePassword(req.user.sub, oldPassword, newPassword)
-  }
 }

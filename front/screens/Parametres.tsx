@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { getUserById } from '../services/userService';
 import { logoutUser, validateToken } from '../services/authService';
 import { IUser } from '../interfaces';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Parametres({ navigation }: any) {
   const navigateTo = (screenName: string) => {
@@ -12,19 +13,21 @@ export default function Parametres({ navigation }: any) {
 
   const [userData, setUserData] = useState<IUser>();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await validateToken();
-        const user = await getUserById(data.payload.sub);
-        setUserData(user);
-      } catch (err) {
-        navigation.navigate('Login');
-      }
-    };
+  const fetchUser = async () => {
+    try {
+      const data = await validateToken();
+      const user = await getUserById(data.payload.sub);
+      setUserData(user);
+    } catch (err) {
+      navigation.navigate('Login');
+    }
+  };
 
-    fetchUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
 
   return (
     <ScrollView style={styles.container}>

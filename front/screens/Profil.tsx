@@ -1,26 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { deleteAccount, getUserById } from '../services/userService';
 import { IUser } from '../interfaces';
 import { Feather } from '@expo/vector-icons';
 import { validateToken } from '../services/authService';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Profil({ navigation }: any) {
   const [userData, setUserData] = useState<IUser>()
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await validateToken();
-        const user = await getUserById(data.payload.sub);
-        setUserData(user);
-      } catch (err) {
-        navigation.navigate('Login');
-      }
-    };
+  const fetchUser = async () => {
+    try {
+      const data = await validateToken();
+      const user = await getUserById(data.payload.sub);
+      setUserData(user);
+    } catch (err) {
+      navigation.navigate('Login');
+    }
+  };
 
-    fetchUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>

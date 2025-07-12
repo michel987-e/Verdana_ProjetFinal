@@ -35,22 +35,19 @@ export class UsersService {
     return this.findOne(id);
   }
 
-  async changePassword(id: number, lasttPassword: string, newPassword: string) {
+  async changePassword(id: number, oldPassword: string, newPassword: string) {
     const user = await this.usersRepository.findOne({ where: { id } });
-    console.log(user);
     if (!user) {
       throw new NotFoundException("Utilisateur non trouvé.");
     }
-    const isOldPasswordValid = await bcrypt.compare(lasttPassword, user.password);
-    console.log(isOldPasswordValid);
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
     if (!isOldPasswordValid) {
       throw new BadRequestException("Ancien mot de passe incorrect.");
     }
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    console.log(hashedNewPassword);
-    return this.update(id, { password: hashedNewPassword });
+    return await this.update(id, { password: hashedNewPassword });
   }
-
+  
   async remove(id: number): Promise<void> {
     await this.usersRepository.delete(id);
   }

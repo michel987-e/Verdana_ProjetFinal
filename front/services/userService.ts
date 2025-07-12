@@ -10,8 +10,8 @@ export const getUserById = async (id: number) => {
     return await api.get(`/users/${id}`).then((response) => response.data)
 }
 
-export const updateMyUser = async (dataToModify: string, data: string) => {
-    await api.put('/users/updatemyuser', {
+export const updateUser = async (id: number, dataToModify: string, data: string) => {
+    await api.put(`/users/update/${id}`, {
         [dataToModify]: data
     })
 }
@@ -34,7 +34,7 @@ export const deleteAccount = async (id: number) => {
 
 export const changePassword = async (oldPassword: string, newPassword: string) => {
     try {
-        const response = await api.put('/users/change-password', {
+        const response = await api.put('/users/password', {
             oldPassword: oldPassword,
             newPassword: newPassword,
         })
