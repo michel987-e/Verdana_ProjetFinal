@@ -5,10 +5,11 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.7;
 const SPACING = 20;
 
+
 const carouselData = [
-  { id: '1', image: require('png') },
-  { id: '2', image: require('png') },
-  { id: '3', image: require('png') },
+  { id: '1', image: require('../assets/images/verdana.png') },
+  { id: '2', image: require('../assets/images/verdana.png') },
+  { id: '3', image: require('../assets/images/verdana.png') },
   { id: 'add', isAddButton: true },
 ];
 
@@ -19,6 +20,7 @@ export default function Home({ navigation }: any) {
   const [password, setPassword] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateYAnim = useRef(new Animated.Value(40)).current;
+  const scrollX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -63,7 +65,7 @@ export default function Home({ navigation }: any) {
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: true }
-        )}        
+        )}
         renderItem={({ item, index }) => {
           const inputRange = [
             (index - 1) * (CARD_WIDTH + SPACING),
@@ -93,8 +95,7 @@ export default function Home({ navigation }: any) {
             >
               {item.isAddButton ? (
                 <TouchableOpacity style={styles.addButton}>
-                  <Text style={styles.addButtonText}>
-                  </Text>
+                  <Text style={styles.addButtonText}></Text>
                 </TouchableOpacity>
               ) : (
                 <Animated.Image
@@ -107,39 +108,10 @@ export default function Home({ navigation }: any) {
           );
         }}
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#2C5530"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Mot de passe"
-        placeholderTextColor="#2C5530"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Se connecter</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Inscription')}>
-        <Text style={styles.signUpText}>Vous n'avez pas de compte? Inscrivez-vous</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.guestButton} onPress={() => navigation.navigate('Info')}>
-        <Text style={styles.guestButtonText}>Continuer en tant qu'invite</Text>
-      </TouchableOpacity>
     </Animated.View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

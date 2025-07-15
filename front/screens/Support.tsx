@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useVideoPlayer, VideoView } from 'expo-video';
+// import { useVideoPlayer, VideoView } from 'expo-video';
 
 
 export default function Support({ navigation }: any) {

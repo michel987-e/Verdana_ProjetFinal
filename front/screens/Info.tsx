@@ -7,7 +7,7 @@ const plantsData = [
     id: '1',
     name: 'plante1',
     
-    image: require('../assets/images/favicon.png'),
+    image: require('../assets/images/verdana.png'),
   },
   {
     id: '2',
