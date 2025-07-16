@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const WebSocket = require('ws');
 const path = require('path');
 
-const port = new SerialPort({ path: 'COM5', baudRate: 9600 });
+const port = new SerialPort({ path: 'COM3', baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
 const dbPath = path.resolve(__dirname, 'plante.db');
