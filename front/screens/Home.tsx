@@ -4,7 +4,6 @@ import {
   Text,
   Dimensions,
   Animated,
-  FlatList,
   StyleSheet,
 } from "react-native";
 
