@@ -1,14 +1,10 @@
 import React from 'react';
-
 import { createStackNavigator } from '@react-navigation/stack';
-
 import WelcomeScreen from '../screens/WelcomeScreen';
-
 import Login from '../screens/auth/Login';
 import Register from '../screens/auth/Register';
-
 import Home from '../screens/Home';
-
+import ChatbotScreen from "../screens/chatbot";
 import Plante from '../screens/plante3';
 import Profil from '../screens/Profil';
 import Securite from '../screens/Securite';
@@ -33,8 +29,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen name="Support" component={Support} />
             <Stack.Screen name="AddPlante" component={AddPlante} options={{ headerShown: false }} />
-
-
+            <Stack.Screen name="Chatbot" component={ChatbotScreen} options={{ title: "Chatbot" }} />
         </Stack.Navigator>
     );
 }
