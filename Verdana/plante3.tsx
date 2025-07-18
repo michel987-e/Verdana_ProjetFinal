@@ -26,29 +26,27 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
   const plantId = (route.params as { plantId?: string })?.plantId;
 
   const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
-
+const host ='192.168.116.197'
   useEffect(() => {
-    console.log('API KEY (expoConfig.extra):', apiKey);
-    const ws = new WebSocket(`ws://${host}:8080`);
-    ws.onopen = () => {
-      if (plantId) {
-        ws.send(JSON.stringify({ type: 'selectPlant', plantId }));
-      }
-    };
-    ws.onmessage = event => {
-      try {
-        const incomingData = JSON.parse(event.data);
-        setData(incomingData);
-      } catch (e) {
-        console.error('Erreur de parsing WebSocket :', e);
-      }
-    };
-    ws.onerror = err => {
-      console.error('Erreur WebSocket', err);
-    };
-    ws.onclose = () => {};
-    return () => ws.close();
-  }, [plantId, host]);
+  const interval = setInterval(() => {
+    fetch(`http://${host}/data`)
+      .then(response => response.json())
+      .then(json => {
+        console.log(' Données reçues depuis ESP32 :', json);
+        setData({
+          temp: json.temperature,
+          hum: json.humidity,
+          lux: json.light
+        });
+      })
+      .catch(err => {
+        console.error('Erreur fetch ESP32:', err);
+      });
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [host]);
+
 
   useEffect(() => {
     const getLocation = async () => {
