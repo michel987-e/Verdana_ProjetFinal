@@ -58,7 +58,7 @@ export default function Parametres({ navigation }: any) {
         <Text style={styles.menuItemText}>Changer votre mot de passe</Text>
         <Feather name="chevron-right" size={20} color="#7F8C8D" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Notifications')}>
+      <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Notif')}>
         <Text style={styles.menuItemText}>Notifications</Text>
         <Feather name="chevron-right" size={20} color="#7F8C8D" />
       </TouchableOpacity>

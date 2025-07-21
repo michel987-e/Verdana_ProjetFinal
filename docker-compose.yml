@@ -133,11 +133,30 @@ services:
 
   recommendation:
     build: ./recommendation-service
+    expose:
+      - 80
+    env_file: ./recommendation-service/.env
+    labels:
+      - "traefik.enable=true"
+      # - "traefik.http.routers.front.rule=Host(`sensor.localhost`)"
+      - "traefik.http.routers.sensor.rule=PathPrefix(`/recommendation`)"
+      - "traefik.http.services.sensor.loadbalancer.server.port=80"
     depends_on:
       kafka:
         condition: service_started
       sensor:
         condition: service_started
+      recommendation-db:
+        condition: service_started
+    networks:
+      - micro-services
+  
+  recommendation-db:
+    image: postgres:15
+    env_file: ./recommendation-service/.env
+    volumes:
+      - ./recommendation-service/init.sql:/docker-entrypoint-initdb.d/init-recommendation.sql
+      - recommendation-data:/var/lib/postgresql/data
     networks:
       - micro-services
 
@@ -173,6 +192,8 @@ volumes:
   sensor-data:
     driver: local
   notification-data:
+    driver: local
+  recommendation-data:
     driver: local
 
 networks:

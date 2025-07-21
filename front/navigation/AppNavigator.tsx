@@ -14,7 +14,7 @@ import UpdateAccount from '../screens/UpdateAccount';
 
 import Plante from '../screens/plante3';
 import Securite from '../screens/Securite';
-import Notifications from '../screens/Notifications';
+import Notif from '../screens/Notifications';
 import Support from '../screens/Support';  
 import AddPlante from '../screens/AddPlante';
 
@@ -33,7 +33,7 @@ export default function AppNavigator() {
 
             <Stack.Screen name="plante3" component={Plante} />
             <Stack.Screen name="Securite" component={Securite} />
-            <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen name="Notif" component={Notif} />
             <Stack.Screen name="Support" component={Support} />
             <Stack.Screen name="AddPlante" component={AddPlante} />
         </Stack.Navigator>

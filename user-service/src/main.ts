@@ -12,7 +12,7 @@ async function bootstrap() {
     origin: "*",
     credentials: true
   });
-  await app.listen(process.env.PORT || 80);
+  await app.listen(process.env.PORT || 80, '0.0.0.0');
   console.log(`🚀 Server running on http://localhost:${process.env.PORT || 80}`);
 }
 bootstrap();
