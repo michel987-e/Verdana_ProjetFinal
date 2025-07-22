@@ -8,11 +8,12 @@ import Profil from '../screens/Profil';
 import Parametres from '../screens/Parametres';
 import UpdateAccount from '../screens/UpdateAccount';
 
-import Plante from '../screens/plante3';
+import Plante from '../screens/Plante';
 import Securite from '../screens/Securite';
 import Notifications from '../screens/Notifications';
 import Support from '../screens/Support';  
 import AddPlante from '../screens/AddPlante';
+import ChatbotScreen from 'screens/chatbot';
 
 const Stack = createStackNavigator();
 
@@ -27,7 +28,8 @@ export default function AppNavigator() {
             <Stack.Screen name="Profil" component={Profil} options={{ headerShown: true }}/>
             <Stack.Screen name="UpdateAccount" component={UpdateAccount} options={{ headerShown: true }}/>
 
-            <Stack.Screen name="plante3" component={Plante} />
+            <Stack.Screen name="ChatbotScreen" component={ChatbotScreen} />
+            <Stack.Screen name="Plante" component={Plante} />
             <Stack.Screen name="Securite" component={Securite} />
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen name="Support" component={Support} />

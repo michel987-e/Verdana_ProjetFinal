@@ -1,14 +1,22 @@
-export async function sendTokenToBackend(token: string) {
-  try {
-    const response = await fetch('http://<TON_BACKEND>:<PORT>/notification/register-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    });
+import axios from 'axios';
+import { getSecureItem } from './secureStore';
 
-    const data = await response.json();
-    console.log('Token envoyé au backend :', data);
-  } catch (err) {
-    console.error('Erreur envoi token backend :', err);
+const config = {
+ baseURL: 'http://10.0.2.2:80',
+//  domain: 'localhost',
+};
+
+const api = axios.create({
+ baseURL: config.baseURL,
+ withCredentials: true,
+});
+
+api.interceptors.request.use(async (config) => {
+  const token = await getSecureItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-}
+  return config;
+});
+
+export default api;

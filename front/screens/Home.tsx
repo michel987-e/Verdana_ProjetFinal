@@ -5,7 +5,10 @@ import {
   Dimensions,
   Animated,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
+import flowerImage from '../assets/images/flower.png';
+import { Feather } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = width * 0.7;
@@ -14,13 +17,13 @@ const ITEM_SPACING = 10;
 
 const DATA = [
   { key: "left-spacer" },
-  { key: "1", title: "../assets/images/verdana.png" },
+  { key: "1", title: flowerImage },
   { key: "2", title: "../assets/images/verdana.png" },
   { key: "3", title: "../assets/images/verdana.png" },
   { key: "right-spacer" },
 ];
 
-export default function Carousel3D() {
+export default function Home({ navigation }: any ) {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   return (
@@ -69,25 +72,37 @@ export default function Carousel3D() {
           });
 
           return (
-            <Animated.View
-              style={[
-                styles.card,
-                {
-                  transform: [
-                    { perspective: 1000 },
-                    { scale },
-                    { rotateY },
-                    { translateY },
-                  ],
-                },
-              ]}
-            >
-              <Text style={styles.title}>{item.title}</Text>
-            </Animated.View>
+            <TouchableOpacity onPress={() => navigation.navigate('Plante')}>
+              <Animated.View
+                style={[
+                  styles.card,
+                  {
+                    transform: [
+                      { perspective: 1000 },
+                      { scale },
+                      { rotateY },
+                      { translateY },
+                    ],
+                  },
+                ]}
+              >
+                <Text style={styles.title}>{item.title}</Text>
+              </Animated.View>
+            </TouchableOpacity>
           );
         }}
       />
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Home')}> 
+          <Feather name="home" size={24} color="#2C5530" />
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Parametres')}> 
+          <Feather name="settings" size={24} color="#2C5530" />
+        </TouchableOpacity>
+      </View>
     </View>
+    
   );
 }
 
@@ -158,8 +173,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  activeNavItem: {
-    
   },
 }); 

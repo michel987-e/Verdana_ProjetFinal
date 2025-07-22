@@ -1,4 +1,4 @@
-import api from "./api"
+import api from "./api";
 import { LoginReponse, LogoutResponse, RegisterReponse, ValidateResponse } from "./responseInterface"
 import { deleteSecureItem, saveSecureItem } from "./secureStore"
 
