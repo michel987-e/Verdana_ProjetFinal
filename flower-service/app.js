@@ -12,6 +12,6 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(authMiddleware);
-app.use('/flower', flowerRoutes); // Prefix route
+app.use('/flower', flowerRoutes);
 
 module.exports = app;

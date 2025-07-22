@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { getUserById } from '../services/userService';
+import { logoutUser, validateToken } from '../services/authService';
+import { IUser } from '../interfaces';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function Gestion({ navigation }: any) {
+export default function Parametres({ navigation }: any) {
   const navigateTo = (screenName: string) => {
     navigation.navigate(screenName);
   };
+
+  const [userData, setUserData] = useState<IUser>();
+
+  const fetchUser = async () => {
+    try {
+      const data = await validateToken();
+      const user = await getUserById(data.payload.sub);
+      setUserData(user);
+    } catch (err) {
+      navigation.navigate('Login');
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -13,7 +35,7 @@ export default function Gestion({ navigation }: any) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#232323" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Parametres</Text>
+        <Text style={styles.headerTitle}>Paramètres</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -23,13 +45,13 @@ export default function Gestion({ navigation }: any) {
           style={styles.profileImage}
         />
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>nom</Text>
+          <Text style={styles.profileName}>{userData?.name ?? userData?.email.trim().split("@")[0] ?? "Guest"}</Text>
         </View>
       </View>
 
       <Text style={styles.sectionTitle}>Compte</Text>
       <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Profil')}>
-        <Text style={styles.menuItemText}>Informations personnelles</Text>
+        <Text style={styles.menuItemText}>Compte</Text>
         <Feather name="chevron-right" size={20} color="#7F8C8D" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.menuItem} onPress={() => alert('Changer le mot de passe')}>
@@ -62,11 +84,11 @@ export default function Gestion({ navigation }: any) {
                   "Voulez-vous vous déconnecter ?",
                   [
                     { text: "Annuler", style: "cancel" },
-                    { text: "Oui", onPress: () => navigation.navigate('Home') }
+                    { text: "Oui", onPress: () => logoutUser().then(() => navigation.navigate('Login')) }
                   ]
                 );
               }}>
-        <Text style={styles.logoutButtonText}>Decoonexion</Text>
+        <Text style={styles.logoutButtonText}>Deconnexion</Text>
       </TouchableOpacity>
     </ScrollView>
   );
