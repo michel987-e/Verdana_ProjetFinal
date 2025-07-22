@@ -114,6 +114,21 @@ export default function WelcomeScreen({ navigation }: any) {
 
   return (
     <Animated.View style={[styles.container, { backgroundColor: backgroundInterpolate }]}>  
+      <Animated.Text
+        style={[
+          styles.brand,
+          {
+            opacity: welcomeOpacity,
+            position: 'absolute',
+            top: 60,
+            alignSelf: 'center',
+            zIndex: 20,
+            fontSize: 32,
+          },
+        ]}
+      >
+        Verdana
+      </Animated.Text>
       <View style={styles.centered}>
         <Animated.View
           style={[
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
   },
   
   brand: {
-    color: '#2C5530',
+    color: '#fff',
     fontWeight: 'bold',
     letterSpacing: 1.5,
   },

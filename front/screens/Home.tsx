@@ -106,4 +106,60 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-});
+  plantList: {
+    paddingHorizontal: 20,
+    paddingBottom: 80,
+  },
+  plantCard: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  plantImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    marginRight: 15,
+  },
+  plantDetails: {
+    flex: 1,
+  },
+  plantName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2C5530',
+  },
+  plantInfo: {
+    fontSize: 14,
+    color: '#2C5530',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    position: 'absolute',
+    bottom: 15,
+    left: 0,
+    right: 0,
+    height: 60,
+  },
+  navItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeNavItem: {
+    
+  },
+}); 
