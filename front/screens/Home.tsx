@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   plantList: {
     paddingHorizontal: 20,
-    paddingBottom: 80, // Espace pour la barre de navigation du bas
+    paddingBottom: 80,
   },
   plantCard: {
     flexDirection: 'row',
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   activeNavItem: {
-    // Styles pour l'icône active
-    // Tu peux ajuster la couleur ou ajouter un fond, etc.
+    
   },
 }); 
