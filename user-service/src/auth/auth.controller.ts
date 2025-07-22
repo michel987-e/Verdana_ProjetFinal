@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Res, UseGuards, Get, Req } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res, UseGuards, Get, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -25,7 +25,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response) {
     const user = await this.authService.validateUser(body.email, body.password);
     if (!user) {
-      return { error: 'Identifiants incorrects' };
+      throw new UnauthorizedException('Identifiants incorrects');
     }
 
     const token = await this.authService.login(user);
@@ -34,8 +34,7 @@ export class AuthController {
       sameSite: 'strict',
       secure: false
     })
-
-    return {message: 'Connected'}
+    return {message: 'Connected', token: token}
   }
 
   @Post('logout')
