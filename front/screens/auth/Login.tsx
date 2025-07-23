@@ -36,6 +36,10 @@ export default function Login({ navigation }: any) {
     }
   };
 
+  const handleQuickLogin = () => {
+    navigation.replace('Home'); // ou navigation.navigate('Home') selon la logique souhaitée
+  };
+
   return (
     <Animated.View
       style={[
@@ -68,6 +72,10 @@ export default function Login({ navigation }: any) {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Se connecter</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.loginButton, { backgroundColor: '#85C1E9' }]} onPress={handleQuickLogin}>
+        <Text style={styles.loginButtonText}>Connexion rapide</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
