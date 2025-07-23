@@ -26,7 +26,7 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
   const plantId = (route.params as { plantId?: string })?.plantId;
 
   const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
-const host ='192.168.116.197'
+const host ='192.168.167.197'
   useEffect(() => {
   const interval = setInterval(() => {
     fetch(`http://${host}/data`)

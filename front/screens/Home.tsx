@@ -1,90 +1,124 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import React, { useRef } from "react";
+import {
+  View,
+  Text,
+  Dimensions,
+  Animated,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
 
-const plantsData = [
-  {
-    id: '1',
-    name: 'plante1',
-    
-    image: require('../assets/images/favicon.png'),
-  },
-  {
-    id: '2',
-    name: 'plante2',
-    
-    image: require('../assets/images/verdana.png'),
-  },
-  {
-    id: '3',
-    name: 'plante3',
-    
-    image: require('../assets/images/verdana.png'), 
-  },
-  {
-    id: '4',
-    name: 'plante4',
-    
-    image: require('../assets/images/verdana.png'), 
-  },
+const { width } = Dimensions.get("window");
+const ITEM_WIDTH = width * 0.7;
+const SPACER_WIDTH = (width - ITEM_WIDTH) / 2;
+const ITEM_SPACING = 10;
+
+const DATA = [
+  { key: "left-spacer" },
+  { key: "1", title: "..a/assets/images/flower.png" },
+  { key: "2", title: "../assets/images/verdana.png" },
+  { key: "3", title: "../assets/images/verdana.png" },
+  { key: "right-spacer" },
 ];
 
-export default function Home({ navigation }: any) {
-  const renderPlantItem = ({ item }: { item: typeof plantsData[0] }) => (
-    <TouchableOpacity style={styles.plantCard} onPress={() => navigation.navigate('plante3', { plantId: item.id })}>
-      <Image source={item.image} style={styles.plantImage} />
-      <View style={styles.plantDetails}>
-        <Text style={styles.plantName}>{item.name}</Text>
-              </View>
-    </TouchableOpacity>
-  );
+export default function Home({ navigation }: any ) {
+  const scrollX = useRef(new Animated.Value(0)).current;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Mes plantes</Text>
-        <TouchableOpacity onPress={() => alert('Ajouter une nouvelle plante')}>
-          <Feather name="plus" size={24} color="#2C5530" />
-        </TouchableOpacity>
-      </View>
-      
-      <FlatList
-        data={plantsData}
-        renderItem={renderPlantItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.plantList}
-      />
+    <View style={{ flex: 1, justifyContent: "center" }}>
+      <Animated.FlatList
+        data={DATA}
+        keyExtractor={(item) => item.key}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        bounces={false}
+        contentContainerStyle={{ alignItems: "center" }}
+        snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+        decelerationRate="fast"
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
+        renderItem={({ item, index }) => {
+          if (!item.title) {
+            return <View style={{ width: SPACER_WIDTH }} />;
+          }
 
+          const inputRange = [
+            (index - 2) * (ITEM_WIDTH + ITEM_SPACING),
+            (index - 1) * (ITEM_WIDTH + ITEM_SPACING),
+            index * (ITEM_WIDTH + ITEM_SPACING),
+          ];
+
+          const scale = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.8, 1, 0.8],
+            extrapolate: "clamp",
+          });
+
+          const rotateY = scrollX.interpolate({
+            inputRange,
+            outputRange: ["15deg", "0deg", "-15deg"],
+            extrapolate: "clamp",
+          });
+
+          const translateY = scrollX.interpolate({
+            inputRange,
+            outputRange: [20, 0, 20],
+            extrapolate: "clamp",
+          });
+
+          return (
+            <TouchableOpacity onPress={() => navigation.navigate('plante3')}>
+              <Animated.View
+                style={[
+                  styles.card,
+                  {
+                    transform: [
+                      { perspective: 1000 },
+                      { scale },
+                      { rotateY },
+                      { translateY },
+                    ],
+                  },
+                ]}
+              >
+                <Text style={styles.title}>{item.title}</Text>
+              </Animated.View>
+            </TouchableOpacity>
+          );
+        }}
+      />
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={() => navigation.navigate('Info')}> 
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Home')}> 
           <Feather name="home" size={24} color="#2C5530" />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Gestion')}> 
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Parametres')}> 
           <Feather name="settings" size={24} color="#2C5530" />
         </TouchableOpacity>
       </View>
     </View>
+    
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-    paddingTop: 50,
+  card: {
+    width: ITEM_WIDTH,
+    marginHorizontal: ITEM_SPACING / 2,
+    height: 250,
+    borderRadius: 20,
+    backgroundColor: "#4682B4",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  headerTitle: {
+  title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2C5530',
+    color: "white",
+    fontWeight: "bold",
   },
   plantList: {
     paddingHorizontal: 20,
@@ -138,8 +172,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  activeNavItem: {
-    
   },
 }); 
