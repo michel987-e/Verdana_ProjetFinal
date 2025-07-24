@@ -3,8 +3,8 @@ const router = express.Router();
 const controller = require('../controllers/flowerController');
 
 router.get('/', controller.getAllFlowers);
+router.get('/:id', controller.getFlowerById);
 router.get('/user/:user_id', controller.getFlowersByUserId);
-router.get('/user/:id', controller.getFlowerById);
 router.post('/', controller.createFlower);
 router.delete('/:id', controller.deleteFlower);
 router.put('/:id', controller.updateFlower);

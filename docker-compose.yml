@@ -160,31 +160,31 @@ services:
     networks:
       - micro-services
 
-  notification:
-    build: ./notification-service
-    expose:
-      - 80
-    env_file: ./notification-service/.env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
-      - "traefik.http.services.notification.loadbalancer.server.port=80"
-    depends_on:
-      kafka:
-        condition: service_started
-      notification-db:
-        condition: service_started
-    networks:
-      - micro-services
+  # notification:
+  #   build: ./notification-service
+  #   expose:
+  #     - 80
+  #   env_file: ./notification-service/.env
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
+  #     - "traefik.http.services.notification.loadbalancer.server.port=80"
+  #   depends_on:
+  #     kafka:
+  #       condition: service_started
+  #     notification-db:
+  #       condition: service_started
+  #   networks:
+  #     - micro-services
 
-  notification-db:
-    image: postgres:15
-    env_file: ./notification-service/.env
-    volumes:
-      - ./notification-service/init.sql:/docker-entrypoint-initdb.d/init-notification.sql
-      - notification-data:/var/lib/postgresql/data
-    networks:
-      - micro-services
+  # notification-db:
+  #   image: postgres:15
+  #   env_file: ./notification-service/.env
+  #   volumes:
+  #     - ./notification-service/init.sql:/docker-entrypoint-initdb.d/init-notification.sql
+  #     - notification-data:/var/lib/postgresql/data
+  #   networks:
+  #     - micro-services
 
 volumes:
   flower-data:

@@ -4,6 +4,7 @@ import { UpdateRecommendationDto } from './dto/update-recommendation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Recommendation } from './entities/recommendation.entity';
 import { Repository } from 'typeorm';
+import axios from 'axios';
 
 @Injectable()
 export class RecommendationService {
@@ -43,5 +44,31 @@ export class RecommendationService {
 
   async remove(id: number) {
     return this.recommendationRepo.delete(id);
+  }
+
+  async sendPushNotif(token: string) {
+    const message = {
+      to: token,
+      sound: 'default',
+      title: 'Alert',
+      body: 'Les capteurs détectent une anomalie sur votre plante !',
+      data: { message: 'Alert' },
+    }
+    try {
+      const response = await axios.post(
+        'https://exp.host/--/api/v2/push/send',
+        message,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate'
+          },
+        },
+      );
+      console.log('Push notification sent successfully:', response.data);
+    } catch (error) {
+      console.error('Error sending push notification:', error);
+    }
   }
 }

@@ -29,9 +29,11 @@ export const runConsumer = async (recommendationService) => {
                 const userId = flower.user_id
                 const userToken = await recommendationService.findOne(userId)
                 const token = userToken.token
-
-                console.log(token)
-                // Recuperation flower id -> Check user_id -> find token from user_id -> send notif to token
+                console.log('token : ', token)
+                if (token) {
+                    console.log('Sending push notification to token:', token);
+                    await recommendationService.sendPushNotif(token);
+                }
             } catch (err) {
                 console.log('[Recommendation] Error while parsing :', err);
             }

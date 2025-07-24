@@ -16,7 +16,7 @@ exports.getAllFlowers = async (req, res) => {
 exports.getFlowerById = async (req, res) => {
   try {
     const { id } = req.params;
-    const flowers = await Flower.getFlowerById(id);
+    const flowers = await Flower.getFlowersById(id);
 
     res.json(flowers);
   } catch (err) {
@@ -32,7 +32,6 @@ exports.getFlowersByUserId = async (req, res) => {
   try {
     const { user_id } = req.params;
     const flowers = await Flower.getFlowersByUserId(user_id);
-
     res.json(flowers);
   } catch (err) {
     res.status(500).json({

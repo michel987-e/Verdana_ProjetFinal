@@ -31,7 +31,7 @@ export default function Notif({ navigation }: any) {
   useEffect(() => {
     async function loadNotification() {
       Notifications.requestPermissionsAsync();
-      setToken((await Notifications.getDevicePushTokenAsync()).data);
+      setToken((await Notifications.getExpoPushTokenAsync()).data);
     }
     loadNotification();
 
@@ -47,7 +47,7 @@ export default function Notif({ navigation }: any) {
   }, []);
 
   const sendLocalNotification = async () => {
-    pushToken(userData!.id, (await Notifications.getDevicePushTokenAsync()).data);
+    pushToken(userData!.id, (await Notifications.getExpoPushTokenAsync()).data);
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Test local',

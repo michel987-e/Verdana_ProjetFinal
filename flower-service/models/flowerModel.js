@@ -27,7 +27,10 @@ exports.getFlowersById = async (id) => {
       'SELECT * FROM flowers WHERE id = $1',
       [id]
     );
-    return result.rows;
+    if (result.rowCount === 0) {
+      throw new Error(`No flower found with id ${id}`);
+    }
+    return result.rows[0];
   } catch (err) {
     throw new Error(`[MODEL] ${err.message}`);
   }
