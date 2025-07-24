@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback,  } from "react";
+import { PermissionsAndroid } from "react-native";
 import {
   View,
   Text,
@@ -16,6 +17,9 @@ import { getUserById } from "services/userService";
 import { validateToken } from "services/authService";
 import { useFocusEffect } from "@react-navigation/native";
 import { getAllFlower, getFlowerByUserID } from "services/flowerService";
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+import * as Location from 'expo-location';
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = width * 0.7;
@@ -45,7 +49,7 @@ export default function Home({ navigation }: any) {
       navigation.navigate('Login');
     }
   };
-
+  
   const fetchFlowers = async () => {
     try {
       const flowers = await getFlowerByUserID(userData!.id);
@@ -63,11 +67,90 @@ export default function Home({ navigation }: any) {
     }, [])
   );
 
+// api meteo
+
+    const [apiData, setApiData] = useState<any>({});
+    const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
+
+  
+
+  useEffect(() => {
+      const getLocation = async () => {
+        try {
+          if (Platform.OS === 'android') {
+            const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            );
+            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+              console.log('Permission localisation refusée');
+              return;
+            }
+          }
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.log('Permission localisation refusée');
+            return;
+          }
+          const location = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.High,
+            timeInterval: 10000,
+            distanceInterval: 10
+          });
+          reverseGeocode(location.coords.latitude, location.coords.longitude);
+        } catch (err) {
+          console.error('Erreur getLocation', err);
+        }
+      };
+      const reverseGeocode = async (lat: number, lon: number) => {
+        try {
+          console.log("API KEY:", apiKey);
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+          );
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            console.log('Réponse non-JSON reçue, utilisation de la ville par défaut');
+            fetchWeather('Paris');
+            return;
+          }
+          
+          const data = await response.json();
+          const city = data.address?.city || data.address?.town || data.address?.village;
+          if (city) {
+            fetchWeather(city);
+          } else {
+            console.log('Ville non trouvée, utilisation de la ville par défaut');
+            fetchWeather('Paris');
+          }
+        } catch (err) {
+          console.error('Erreur reverse geocoding', err);
+          console.log('Utilisation de la ville par défaut en cas d\'erreur');
+          fetchWeather('Paris');
+        }
+      };
+      const fetchWeather = async (cityName: string) => {
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          setApiData(data);
+        } catch (err) {
+          console.error('Erreur fetchWeather', err);
+        }
+      };
+      getLocation();
+    }, []);
+
   
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollAnim = useRef(new Animated.Value(0)).current;
 
-  const weather = " 28°C |  Vent : 12 km/h |  Humidité : 55%";
+  const weather = apiData.weather;
   const bannerWidth = width * 2;
 
   useEffect(() => {
@@ -162,8 +245,6 @@ export default function Home({ navigation }: any) {
                 <Animated.View
                   style={[
                     styles.card,
-                    
-
                     {
                       transform: [
                         { perspective: 1000 },
