@@ -23,7 +23,7 @@
 
 | Frontend         | Backend                | IoT/Capteurs      | Base de données | Notifications |
 |------------------|-----------------------|-------------------|-----------------|---------------|
-| React Native     | Node.js / Express      | Arduino ESP32     | SQLite / SQL    | Firebase FCM  |
+| React Native     | Node.js / Express      | Arduino ESP32     | postgreSQL    | Firebase FCM  |
 | Expo             | NestJS (microservices) | DHT, photoresistor|                 |               |
 
 ## Fonctionnalités
