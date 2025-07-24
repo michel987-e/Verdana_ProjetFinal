@@ -13,6 +13,21 @@ exports.getAllFlowers = async (req, res) => {
   }
 };
 
+exports.getFlowerById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const flowers = await Flower.getFlowerById(id);
+
+    res.json(flowers);
+  } catch (err) {
+    res.status(500).json({
+      error: "Internal server error",
+      service: "CONTROLLER",
+      detail: err.message
+    });
+  }
+};
+
 exports.getFlowersByUserId = async (req, res) => {
   try {
     const { user_id } = req.params;

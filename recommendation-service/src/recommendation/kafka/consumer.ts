@@ -23,7 +23,7 @@ export const runConsumer = async (recommendationService) => {
                 console.log('data parsed : ', data)
 
                 // Probleme requete api flower
-                const flowerRes = await axios.get(`http://localhost:80/flower/${data.flower_id}`);
+                const flowerRes = await axios.get(`http://flower:80/flower/${data.flower_id}`);
                 const flower = flowerRes.data;
 
                 const userId = flower.user_id
