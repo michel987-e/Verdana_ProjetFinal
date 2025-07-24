@@ -26,7 +26,8 @@ export interface IFlower {
     soil_min: number,
     soil_max: number,
     light_min: number,
-    light_max: number
+    light_max: number,
+    image?: number,
 }
 
 export interface ISensor {
