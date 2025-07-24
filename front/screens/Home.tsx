@@ -1,5 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback,  } from "react";
-import { PermissionsAndroid } from "react-native";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,70 +8,101 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import flowerImage from "../assets/images/flower.png";
-import addButtonImage from "../assets/images/add_button.png";
-import { Feather } from "@expo/vector-icons";
-import { IFlower, IUser } from "interfaces";
-import { getUserById } from "services/userService";
-import { validateToken } from "services/authService";
 import { useFocusEffect } from "@react-navigation/native";
-import { getAllFlower, getFlowerByUserID } from "services/flowerService";
+import { getFlowerByUserID } from "services/flowerService";
+import { validateToken } from "services/authService";
+import { getUserById } from "services/userService";
+import flowerImage from '../assets/images/flower.png';
+import addButtonImage from "../assets/images/add_button.png";
+import { IFlower } from "interfaces";
+import * as Location from "expo-location";
+import { Platform, PermissionsAndroid } from "react-native";
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
-import * as Location from 'expo-location';
+
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = width * 0.7;
 const SPACER_WIDTH = (width - ITEM_WIDTH) / 2;
 const ITEM_SPACING = 10;
 
-const DATA = [
-  { key: "left-spacer" },
-  { key: "1", title: flowerImage },
-  { key: "2", title: flowerImage },
-  { key: "3", title: flowerImage },
-  { key: "add-button", title: addButtonImage },
-  { key: "right-spacer" },
-];
-
 export default function Home({ navigation }: any) {
+  const [flowers, setFlowers] = useState<IFlower[]>([]);
+  const [userData, setUserData] = useState<any>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollAnim = useRef(new Animated.Value(0)).current;
+  const bannerWidth = width * 2;
 
-  const [userData, setUserData] = useState<IUser>();
-  const [flowers, setFlowers] = useState<IFlower[]>();
+// recupere les plante
 
-  const fetchUser = async () => {
+  const fetchFlowers = async (userId: number) => {
     try {
-      const data = await validateToken();
-      const user = await getUserById(data.payload.sub);
-      setUserData(user);
-    } catch (err) {
-      navigation.navigate('Login');
-    }
-  };
-  
-  const fetchFlowers = async () => {
-    try {
-      const flowers = await getFlowerByUserID(userData!.id);
-      setFlowers(flowers);
-      console.log("Flowers fetched successfully:", flowers);
+      const userFlowers = await getFlowerByUserID(userId);
+      console.log(" Fleurs récupérées :", userFlowers);
+
+      const enrichedFlowers = userFlowers.map((f: IFlower) => ({
+        ...f,
+        image: flowerImage,
+      }));
+
+      setFlowers(enrichedFlowers);
     } catch (error) {
-      console.error("Error fetching flowers:", error);
+      console.error("Erreur fetchFlowers", error);
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchUser();
-      fetchFlowers();
-    }, [])
-  );
+// api user / flower
+
+useFocusEffect(
+  useCallback(() => {
+    const loadData = async () => {
+      try {
+        const tokenData = await validateToken();
+        const user = await getUserById(tokenData.payload.sub);
+        setUserData(user);
+
+        const flowers = await getFlowerByUserID(user.id);
+        console.log(" Fleurs récupérées :", flowers);
+
+        const enrichedFlowers = flowers.map((f: IFlower) => ({
+          ...f,
+          image: flowerImage,
+        }));
+
+        setFlowers(enrichedFlowers);
+      } catch (error) {
+        console.error("Erreur lors du chargement :", error);
+        navigation.navigate("Login");
+      }
+    };
+
+    loadData();
+  }, [navigation])
+);
+
+  useEffect(() => {
+    if (userData?.id) {
+      fetchFlowers(userData.id);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    const animate = () => {
+      scrollAnim.setValue(width);
+      Animated.timing(scrollAnim, {
+        toValue: -bannerWidth,
+        duration: 13000,
+        useNativeDriver: true,
+      }).start(() => animate());
+    };
+    animate();
+  }, []);
 
 // api meteo
 
-    const [apiData, setApiData] = useState<any>({});
-    const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
 
-  
+  const [apiData, setApiData] = useState<any>(null); 
+  const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
+  const [weather, setWeather] = useState("Météo ici...");
 
   useEffect(() => {
       const getLocation = async () => {
@@ -146,43 +176,37 @@ export default function Home({ navigation }: any) {
       getLocation();
     }, []);
 
-  
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const scrollAnim = useRef(new Animated.Value(0)).current;
+// info affichage meteo
 
-  const weather = apiData.weather;
-  const bannerWidth = width * 2;
+    useEffect(() => {
+      if (!apiData || !apiData.main || !apiData.weather) return;
 
-  useEffect(() => {
-    const animate = () => {
-      scrollAnim.setValue(width);
-      Animated.timing(scrollAnim, {
-        toValue: -bannerWidth,
-        duration: 13000, 
-        useNativeDriver: true,
-      }).start(() => animate());
-    };
-    animate();
-  }, []);
-// bouton Notification et chatbot
+      const tempC = (apiData.main.temp - 273.15).toFixed(1);
+      const condition = apiData.weather[0].description;
+
+      setWeather(`🌡️ ${tempC}°C - ${condition}`);
+    }, [apiData]);
+
+type CarouselItem = {
+  key: string;
+  image?: number;
+  title?: string;
+};
+
+  const carouselData: CarouselItem[] = [
+    { key: "left-spacer" },
+    ...flowers.map((flower) => ({
+      key: flower.id.toString(),
+      title: flower.name,
+      image: flower.image,
+    })),
+    { key: "add-button", image: addButtonImage },
+    { key: "right-spacer" },
+  ];
+
   return (
     <View style={{ flex: 1, justifyContent: "center" }}>
-      <View style={styles.headerIconsContainer}>
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => navigation.navigate("ChatBot")}
-        >
-          <Feather name="zap" size={20} color="#2C5530" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => navigation.navigate("Notifications")}
-        >
-          <Feather name="bell" size={20} color="#2C5530" />
-        </TouchableOpacity>
-      </View>
-{/* animation meteo  */}
+      {/* météo bandeau */}
       <View style={styles.weatherBannerContainer}>
         <Animated.View
           style={[
@@ -195,9 +219,10 @@ export default function Home({ navigation }: any) {
           <Text style={styles.weatherText}>{weather}</Text>
         </Animated.View>
       </View>
-{/* animation / carousel des cartes  */}
+
+      {/* carrousel animée*/}
       <Animated.FlatList
-        data={DATA}
+        data={carouselData}
         keyExtractor={(item) => item.key}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -211,7 +236,9 @@ export default function Home({ navigation }: any) {
           { useNativeDriver: true }
         )}
         renderItem={({ item, index }) => {
-          if (!item.title) {
+          console.log("Item rendu :", item);
+
+          if (!item.image) {
             return <View style={{ width: SPACER_WIDTH }} />;
           }
 
@@ -238,7 +265,7 @@ export default function Home({ navigation }: any) {
             outputRange: [20, 0, 20],
             extrapolate: "clamp",
           });
-// carte bouton plus
+// bouton add
           if (item.key === "add-button") {
             return (
               <TouchableOpacity onPress={() => navigation.navigate("AddPlante")}>
@@ -255,12 +282,12 @@ export default function Home({ navigation }: any) {
                     },
                   ]}
                 >
-                  <Image source={item.title} style={styles.cardImage} resizeMode="cover" />
+                  <Image source={item.image} style={styles.cardImage} />
                 </Animated.View>
               </TouchableOpacity>
             );
           }
-// carte des pots
+// bouton cards pots
           return (
             <TouchableOpacity onPress={() => navigation.navigate("Plante")}>
               <Animated.View
@@ -276,42 +303,29 @@ export default function Home({ navigation }: any) {
                   },
                 ]}
               >
-                <Image source={item.title} style={styles.cardImage} resizeMode="cover" />
+                <Image source={item.image} style={styles.cardImage} />
+                {item.title && <Text style={styles.title}>{item.title}</Text>}
               </Animated.View>
             </TouchableOpacity>
           );
         }}
       />
-
-{/* barre de navigation en bas */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Home")}>
-          <Feather name="home" size={24} color="#2C5530" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Parametres")}>
-          <Feather name="settings" size={24} color="#2C5530" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
+
 // css
+
 const styles = StyleSheet.create({
   weatherBannerContainer: {
     height: 50,
     backgroundColor: "#e6f4ea",
     borderRadius: 12,
     marginHorizontal: 20,
-    marginTop: 80, 
-    marginBottom: 40, 
+    marginTop: 80,
+    marginBottom: 40,
     justifyContent: "center",
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   weatherBannerContent: {
     flexDirection: "row",
@@ -323,25 +337,6 @@ const styles = StyleSheet.create({
     color: "#2C5530",
     paddingLeft: 10,
   },
-  notificationIconContainer: {
-    position: "absolute",
-    top: 50,
-    right: 20,
-    zIndex: 10,
-  },
-  notificationButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#E0F7E9",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
   card: {
     width: ITEM_WIDTH,
     marginHorizontal: ITEM_SPACING / 2,
@@ -349,68 +344,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    color: "white",
-    fontWeight: "bold",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
-    position: "absolute",
-    bottom: 15,
-    left: 0,
-    right: 0,
-    height: 60,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addButton: {
-    width: 24,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+    backgroundColor: "#f0f0f0",
   },
   cardImage: {
-  width: "100%",
-  height: "100%",
-  borderRadius: 20,
-  },
-  headerIconsContainer: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    right: 20,
-    zIndex: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
+    width: "100%",
+    height: "100%",
     borderRadius: 20,
-    backgroundColor: "#E0F7E9",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  title: {
+    position: "absolute",
+    bottom: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#2C5530",
   },
 });
