@@ -12,6 +12,7 @@
 - [Fonctionnalités](#fonctionnalités)
 - [Architecture](#architecture)
 - [Installation](#installation)
+- [Démarrage rapide (avec le front commenté dans Docker Compose)](#démarrage-rapide-avec-le-front-commenté-dans-docker-compose)
 - [Utilisation](#utilisation)
 - [Tests](#tests)
 - [Documentation](#documentation)
@@ -48,7 +49,7 @@ Le projet est organisé en microservices pour une meilleure scalabilité et main
 - **Notification-service** : Envoi de notifications push (Firebase FCM)
 - **User-service** : Gestion des utilisateurs et authentification
 - **Recommendation-service** : Suggestions personnalisées pour l’entretien
-- **Base de données** : SQLite/SQL
+- **Base de données** : PostgreSQL
 
 Voir le schéma d’architecture dans [`doc/wireframe/`](doc/wireframe/).
 
@@ -77,7 +78,7 @@ docker-compose up --build
 Ou, pour chaque service individuellement :
 
 ```bash
-cd chatbot-service
+cd sensor-service
 npm install
 npm start
 ```
@@ -89,6 +90,22 @@ cd front
 npm install
 expo start
 ```
+
+---
+
+## Démarrage rapide (avec le front commenté dans Docker Compose)
+
+1. **Lance les services backend en arrière-plan :**
+   ```bash
+   docker compose up --build -d
+   ```
+2. **Démarre le front localement :**
+   ```bash
+   cd front
+   npx expo start --tunnel
+   ```
+
+> Le flag `--tunnel` permet d’accéder à l’application mobile depuis un appareil sur le même réseau, même si tu n’es pas sur le même Wi-Fi.
 
 ---
 
@@ -108,7 +125,7 @@ expo start
 Chaque microservice possède ses propres tests unitaires et d’intégration.
 
 ```bash
-cd chatbot-service
+cd sensor-service
 npm test
 ```
 
