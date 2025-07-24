@@ -78,7 +78,7 @@ docker-compose up --build
 Ou, pour chaque service individuellement :
 
 ```bash
-cd chatbot-service
+cd sensor-service
 npm install
 npm start
 ```
@@ -125,7 +125,7 @@ expo start
 Chaque microservice possède ses propres tests unitaires et d’intégration.
 
 ```bash
-cd chatbot-service
+cd sensor-service
 npm test
 ```
 
