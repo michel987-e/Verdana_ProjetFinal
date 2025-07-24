@@ -17,7 +17,7 @@ export interface IFlower {
     id: number,
     user_id: number,
     name: string,
-    species: string,
+    plant_type: string,
     location: string,
     temp_min: number,
     temp_max: number,

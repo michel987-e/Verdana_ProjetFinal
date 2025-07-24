@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,11 @@ import {
 import flowerImage from "../assets/images/flower.png";
 import addButtonImage from "../assets/images/add_button.png";
 import { Feather } from "@expo/vector-icons";
+import { IFlower, IUser } from "interfaces";
+import { getUserById } from "services/userService";
+import { validateToken } from "services/authService";
+import { useFocusEffect } from "@react-navigation/native";
+import { getAllFlower, getFlowerByUserID } from "services/flowerService";
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = width * 0.7;
@@ -27,10 +32,42 @@ const DATA = [
 ];
 
 export default function Home({ navigation }: any) {
+
+  const [userData, setUserData] = useState<IUser>();
+  const [flowers, setFlowers] = useState<IFlower[]>();
+
+  const fetchUser = async () => {
+    try {
+      const data = await validateToken();
+      const user = await getUserById(data.payload.sub);
+      setUserData(user);
+    } catch (err) {
+      navigation.navigate('Login');
+    }
+  };
+
+  const fetchFlowers = async () => {
+    try {
+      const flowers = await getFlowerByUserID(userData!.id);
+      setFlowers(flowers);
+      console.log("Flowers fetched successfully:", flowers);
+    } catch (error) {
+      console.error("Error fetching flowers:", error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+      fetchFlowers();
+    }, [])
+  );
+
+  
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollAnim = useRef(new Animated.Value(0)).current;
 
-  const weather = "☀️ 28°C | 💨 Vent : 12 km/h | 💧 Humidité : 55%";
+  const weather = " 28°C |  Vent : 12 km/h |  Humidité : 55%";
   const bannerWidth = width * 2;
 
   useEffect(() => {
@@ -125,6 +162,8 @@ export default function Home({ navigation }: any) {
                 <Animated.View
                   style={[
                     styles.card,
+                    
+
                     {
                       transform: [
                         { perspective: 1000 },
@@ -280,7 +319,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-
   headerButton: {
     width: 40,
     height: 40,
