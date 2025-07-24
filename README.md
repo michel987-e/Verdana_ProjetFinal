@@ -154,4 +154,4 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE).
 
 ## Contact
 
-Pour toute suggestion, question ou bug, n’hésitez pas à ouvrir une issue ou
+Pour toute suggestion, question ou bug, n’hésitez pas à ouvrir une issue ou à contacter l’équipe via le dépôt GitHub.

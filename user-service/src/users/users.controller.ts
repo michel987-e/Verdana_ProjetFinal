@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, Put, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -30,10 +31,21 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Put('update/:id')
   @HttpCode(HttpStatus.OK)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('password')
+  @HttpCode(HttpStatus.OK)
+  password(@Req() req, @Body() changePasswordDto: ChangePasswordDto) {
+    return this.usersService.changePassword(
+      req.user.sub,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -42,4 +54,5 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
 }

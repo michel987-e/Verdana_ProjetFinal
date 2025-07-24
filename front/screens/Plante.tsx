@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, PermissionsAndroid, Platform, StatusBar } from 'react-native';
+import { Alert, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, PermissionsAndroid, StatusBar } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Location from 'expo-location';
+import { useRoute } from '@react-navigation/native';
+
+import { Platform } from 'react-native';
+
+const getWSHost = () => {
+  return Platform.OS === 'ios' || Platform.OS === 'android'
+    ? '192.168.0.16'
+    : 'localhost';
+};
+const host = getWSHost();
 
 export default function PlanteScreen({ navigation }: { navigation: any }) {
   const [data, setData] = useState<{ temp?: number; hum?: number; lux?: number }>({});
@@ -12,26 +22,31 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
   const [activeTab, setActiveTab] = useState<'leaf' | 'settings'>('leaf');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const Stack = createStackNavigator();
+  const route = useRoute();
+  const plantId = (route.params as { plantId?: string })?.plantId;
 
   const apiKey = Constants.expoConfig?.extra?.OPENWEATHER_API_KEY;
-
+const host ='192.168.116.197'
   useEffect(() => {
-    console.log('API KEY (expoConfig.extra):', apiKey);
-    const ws = new WebSocket('ws://192.168.0.16:8080');
-    ws.onmessage = event => {
-      try {
-        const incomingData = JSON.parse(event.data);
-        setData(incomingData);
-      } catch (e) {
-        console.error('Erreur de parsing WebSocket :', e);
-      }
-    };
-    ws.onerror = err => {
-      console.error('Erreur WebSocket', err);
-    };
-    ws.onclose = () => {};
-    return () => ws.close();
-  }, []);
+  const interval = setInterval(() => {
+    fetch(`http://${host}/data`)
+      .then(response => response.json())
+      .then(json => {
+        console.log(' Données reçues depuis ESP32 :', json);
+        setData({
+          temp: json.temperature,
+          hum: json.humidity,
+          lux: json.light
+        });
+      })
+      .catch(err => {
+        console.error('Erreur fetch ESP32:', err);
+      });
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [host]);
+
 
   useEffect(() => {
     const getLocation = async () => {
@@ -108,6 +123,41 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
   const kelvinToCelsius = (k: any) => {
     return (k - 273.15).toFixed(1);
   };
+
+  function getSensorStatus(type: 'temp' | 'hum' | 'lux', value: number | undefined) {
+    if (value === undefined || value === null) return { color: 'gray', label: 'Indisponible' };
+    if (type === 'temp') {
+      if (value < 15) return { color: 'red', label: 'Trop froid' };
+      if (value > 28) return { color: 'red', label: 'Trop chaud' };
+      return { color: 'green', label: 'Optimal' };
+    }
+    if (type === 'hum') {
+      if (value < 40) return { color: 'red', label: 'Pas assez' };
+      if (value > 80) return { color: 'red', label: 'Trop' };
+      return { color: 'green', label: 'Optimal' };
+    }
+    if (type === 'lux') {
+      if (value < 200) return { color: 'red', label: 'Pas assez' };
+      if (value > 2000) return { color: 'red', label: 'Trop de lumiere' };
+      return { color: 'green', label: 'Optimal' };
+    }
+    return { color: 'gray', label: 'Indisponible' };
+  }
+
+  const BlinkingDot = ({ color }: { color: string }) => {
+    const [visible, setVisible] = useState(true);
+    
+    return (
+      <View style={{ alignItems: 'center', height: 18 }}>
+        {visible && (
+          <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: color, marginBottom: 2 }} />
+        )}
+      </View>
+    );
+  };
+  const tempStatus = getSensorStatus('temp', data.temp ?? 10);
+  const humStatus = getSensorStatus('hum', data.hum ?? 80);
+  const luxStatus = getSensorStatus('lux', data.lux?? 500); 
 
   return (
     <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
@@ -218,7 +268,9 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
             <View style={styles.sensorIconContainer}>
               <MaterialCommunityIcons name="thermometer" size={24} color="#E67E22" />
             </View>
-            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.temp ?? '--'}°C</Text>
+            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.temp ?? 10}°C</Text>
+            <BlinkingDot color={tempStatus.color} />
+            <Text style={{ fontSize: 13, color: tempStatus.color, marginBottom: 8 }}>{tempStatus.label}</Text>
             <Text style={[styles.sensorLabel, isDarkMode && { color: '#000' }]}>Température</Text>
           </View>
 
@@ -226,7 +278,9 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
             <View style={styles.sensorIconContainer}>
               <MaterialCommunityIcons name="water-percent" size={24} color="#3498DB" />
             </View>
-            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.hum ?? '--'}%</Text>
+            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.hum ?? 80}%</Text>
+            <BlinkingDot color={humStatus.color} />
+            <Text style={{ fontSize: 13, color: humStatus.color, marginBottom: 8 }}>{humStatus.label}</Text>
             <Text style={[styles.sensorLabel, isDarkMode && { color: '#000' }]}>Humidité</Text>
           </View>
 
@@ -234,10 +288,19 @@ export default function PlanteScreen({ navigation }: { navigation: any }) {
             <View style={styles.sensorIconContainer}>
               <MaterialCommunityIcons name="white-balance-sunny" size={24} color="#F1C40F" />
             </View>
-            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.lux ?? '--'}</Text>
+            <Text style={[styles.sensorValue, isDarkMode && { color: '#000' }]}>{data.lux ?? 500}</Text>
+            <BlinkingDot color={luxStatus.color} />
+            <Text style={{ fontSize: 13, color: luxStatus.color, marginBottom: 8 }}>{luxStatus.label}</Text>
             <Text style={[styles.sensorLabel, isDarkMode && { color: '#000' }]}>Luminosité</Text>
           </View>
         </View>
+      </View>
+      <View style={styles.sensorGraph}>
+        <Text style={[styles.sectionTitle, isDarkMode && { color: '#FAFAFA' }]}>Graphique des capteurs</Text>
+        <Text style={{ fontSize: 16, color: '#7F8C8D', textAlign: 'center', marginBottom: 16 }}>
+          (Graphique à venir bouton voir plus ?)
+        </Text>
+        
       </View>
     </SafeAreaView>
   );
@@ -431,5 +494,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#7F8C8D',
     marginBottom: 8,
+  },
+  sensorGraph: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  sensorGraphTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2C5530',
+    marginBottom: 16,
   },
 });
