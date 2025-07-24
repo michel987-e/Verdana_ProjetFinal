@@ -10,12 +10,13 @@ async function bootstrap() {
   const app =await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.enableCors({
-    origin: 'http://localhost',
+    origin: '*',
     credentials: true
   });
-  await connectProducer();
-  await app.listen(process.env.PORT || 80);
+  await app.listen(process.env.PORT || 80, '0.0.0.0');
   console.log(`🚀 Server running on http://localhost:${process.env.PORT || 80}`);
+  await connectProducer();
+
 }
 
 bootstrap();

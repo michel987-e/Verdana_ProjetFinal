@@ -6,6 +6,7 @@ const flowerRoutes = require('./routes/flowerRoutes');
 const authMiddleware = require('./middlewares/authMiddleware')
 
 const app = express();
+app.use(express.json());
 app.use(cors({
     origin: "http://localhost:3001",
     methods: ["GET", "POST", "PUT", "DELETE"]

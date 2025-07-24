@@ -5,24 +5,33 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://??
-    description: Pas de serveur pour l'instant
+  - url: http://localhost:80
+    description: Serveur local de développement
+
+security:
+  - bearerAuth: []
+
 
 tags:
+  - name: auth
+    description: Authentification pour les utilisateurs
   - name: users
     description: Opérations sur les utilisateurs
   - name: flowers
     description: Gestion des plantes
-  - name: sensor_data
+  - name: sensor
     description: Données capteurs des plantes
-    
+  - name: recommendation
+    description: Recommandations basées sur les données capteurs
+
 paths:
   /users:
     post:
-      tags:
-        - users
-      operationId: createUser
+      tags: [users]
       summary: Créer un nouvel utilisateur
+      operationId: createUser
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -32,15 +41,36 @@ paths:
       responses:
         '201':
           description: Utilisateur créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
           description: Erreur de validation
 
+    get:
+      tags: [users]
+      summary: Récupérer tous les utilisateurs
+      security:
+        - bearerAuth: []
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
   /users/{id}:
     get:
-      tags:
-        - users
+      tags: [users]
+      summary: Récupérer un utilisateur par ID
+      security:
+        - bearerAuth: []
       operationId: getUserById
-      summary: Récupérer les infos d'un utilisateur
       parameters:
         - in: path
           name: id
@@ -57,29 +87,172 @@ paths:
         '404':
           description: Utilisateur non trouvé
 
-  /flowers:
-    post:
-      tags:
-        - flowers
-      operationId: createFlower
-      summary: Ajouter une plante
+  /users/update/{id}:
+    put:
+      tags: [users]
+      summary: Mettre à jour un utilisateur
+      security:
+        - bearerAuth: []
+      operationId: updateUser
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FlowerInput'
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Utilisateur mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Données invalides
+        '404':
+          description: Utilisateur non trouvé
+
+  /users/password:
+    put:
+      tags: [users]
+      summary: Modifier le mot de passe d’un utilisateur
+      security:
+        - bearerAuth: []
+      operationId: updatePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oldPassword, newPassword]
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Mot de passe mis à jour
+        '400':
+          description: Ancien mot de passe invalide
+        '404':
+          description: Utilisateur non trouvé
+
+  /users/auth/register:
+    post:
+      tags: [auth]
+      summary: Enregistrer un nouvel utilisateur
+      operationId: registerUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
       responses:
         '201':
-          description: Plante ajoutée
+          description: Utilisateur enregistré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
-          description: Erreur de validation
+          description: Données invalides
 
+  /users/auth/login:
+    post:
+      tags: [auth]
+      summary: Connexion utilisateur
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        '401':
+          description: Identifiants invalides
+
+  /users/auth/logout:
+    post:
+      tags: [auth]
+      summary: Déconnexion utilisateur
+      security:
+        - bearerAuth: []
+      operationId: logoutUser
+      responses:
+        '200':
+          description: Déconnecté avec succès
+
+  /users/auth/validate:
+    post:
+      tags: [auth]
+      summary: Valider un token JWT
+      operationId: validateToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Résultat de validation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  payload:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      sub:
+                        type: integer
+                      iat:
+                        type: integer
+                      exp:
+                        type: integer
+
+  /flower:
     get:
-      tags:
-      - flowers
-      operationId: getAllFlowers
-      summary: Liste des plantes
+      tags: [flowers]
+      summary: Récupérer toutes les plantes
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Liste des plantes
@@ -90,7 +263,207 @@ paths:
                 items:
                   $ref: '#/components/schemas/Flower'
 
+    post:
+      tags: [flowers]
+      summary: Créer une plante
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowerInput'
+      responses:
+        '201':
+          description: Plante créée
+
+  /flower/user/{id}:
+    get:
+      tags: [flowers]
+      summary: Récupérer les plantes d’un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des plantes de l’utilisateur
+
+  /flower/{id}:
+    get:
+      tags: [flowers]
+      summary: Récupérer une plante par ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de la plante
+
+    put:
+      tags: [flowers]
+      summary: Modifier une plante
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowerInput'
+      responses:
+        '200':
+          description: Plante mise à jour
+
+    delete:
+      tags: [flowers]
+      summary: Supprimer une plante
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Plante supprimée
+          
+
+  /sensor:
+    get:
+      tags: [sensor]
+      summary: Récupérer toutes les données capteurs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Données capteurs
+
+    post:
+      tags: [sensor]
+      summary: Ajouter une donnée capteur
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [flower_id, temperature, humidity, light, soil]
+              properties:
+                flower_id:
+                  type: integer
+                temperature:
+                  type: number
+                humidity:
+                  type: number
+                light:
+                  type: number
+                soil:
+                  type: number
+      responses:
+        '201':
+          description: Donnée capteur créée
+
+  /sensor/{id}:
+    get:
+      tags: [sensor]
+      summary: Récupérer une donnée capteur par ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détail de la donnée capteur
+
+    put:
+      tags: [sensor]
+      summary: Modifier une donnée capteur
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flower_id:
+                  type: integer
+                temperature:
+                  type: number
+                humidity:
+                  type: number
+                light:
+                  type: number
+                soil:
+                  type: number
+      responses:
+        '200':
+          description: Donnée capteur mise à jour
+
+    delete:
+      tags: [sensor]
+      summary: Supprimer une donnée capteur
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Donnée capteur supprimée
+
+  /recommendation:
+    get:
+      tags: [recommendation]
+      summary: Récupérer des recommandations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste de recommandations
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     User:
       type: object
@@ -99,21 +472,38 @@ components:
           type: integer
         email:
           type: string
+        password:
+          type: string
         name:
           type: string
+          nullable: true
         city:
           type: string
+          nullable: true
         country:
           type: string
+          nullable: true
         created_at:
           type: string
           format: date-time
 
     UserInput:
       type: object
-      required:
-        - email
-        - password
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+
+    UserUpdate:
+      type: object
       properties:
         email:
           type: string
@@ -164,9 +554,7 @@ components:
 
     FlowerInput:
       type: object
-      required:
-        - user_id
-        - name
+      required: [user_id, name]
       properties:
         user_id:
           type: integer
@@ -191,43 +579,4 @@ components:
         light_min:
           type: number
         light_max:
-          type: number
-
-    SensorData:
-      type: object
-      properties:
-        id:
-          type: integer
-        pot_id:
-          type: integer
-        temperature:
-          type: number
-        humidity:
-          type: number
-        soil:
-          type: number
-        light:
-          type: number
-        timestamp:
-          type: string
-          format: date-time
-
-    SensorDataInput:
-      type: object
-      required:
-        - pot_id
-        - temperature
-        - humidity
-        - soil
-        - light
-      properties:
-        pot_id:
-          type: integer
-        temperature:
-          type: number
-        humidity:
-          type: number
-        soil:
-          type: number
-        light:
           type: number

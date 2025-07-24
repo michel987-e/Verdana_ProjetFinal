@@ -19,10 +19,12 @@ export class RecommendationService {
 
     if (existing) {
       existing.token = dto.token;
+      console.log(existing);
       return this.recommendationRepo.save(existing);
     }
 
     const recommendation = this.recommendationRepo.create(dto);
+    console.log(recommendation);
     return this.recommendationRepo.save(recommendation);
   }
 
@@ -31,7 +33,7 @@ export class RecommendationService {
   }
 
   async findOne(id: number) {
-    return this.recommendationRepo.findOne({ where: { id } });
+    return this.recommendationRepo.findOne({ where: { user_id: id } });
   }
 
   async update(id: number, updateRecommendationDto: UpdateRecommendationDto) {

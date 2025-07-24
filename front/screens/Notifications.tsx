@@ -1,15 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { TextInput } from 'react-native-paper';
+import { pushToken } from '../services/recommendationService';
+import { IUser } from '../interfaces';
+import { validateToken } from '../services/authService';
+import { getUserById } from '../services/userService';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function Notif() {
+export default function Notif({ navigation }: any) {
   const [token, setToken] = useState<string>('')
+  const [userData, setUserData] = useState<IUser>();
+
+  const fetchUser = async () => {
+    try {
+      const data = await validateToken();
+      const user = await getUserById(data.payload.sub);
+      setUserData(user);
+    } catch (err) {
+      navigation.navigate('Login');
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
+
   useEffect(() => {
     async function loadNotification() {
       Notifications.requestPermissionsAsync();
       setToken((await Notifications.getDevicePushTokenAsync()).data);
-      alert(`Push token: ${token}`);
     }
     loadNotification();
 
@@ -25,6 +47,7 @@ export default function Notif() {
   }, []);
 
   const sendLocalNotification = async () => {
+    pushToken(userData!.id, (await Notifications.getDevicePushTokenAsync()).data);
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Test local',
