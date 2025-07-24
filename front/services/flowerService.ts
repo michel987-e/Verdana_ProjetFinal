@@ -7,3 +7,7 @@ export const getAllFlower = async () => {
 export const getFlowerByUserID = async (id: number) => {
     return await api.get(`/flower/user/${id}`).then((response) => response.data)
 }
+
+export const createFlower = async (data: any) => {
+  return await api.post('/flower', data).then(res => res.data);
+};
