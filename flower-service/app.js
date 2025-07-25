@@ -3,7 +3,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 const flowerRoutes = require('./routes/flowerRoutes');
-const authMiddleware = require('./middlewares/authMiddleware');
+
+// const authMiddleware = require('./middlewares/authMiddleware')
 
 const app = express();
 app.use(express.json());
@@ -12,7 +13,7 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 app.use(cookieParser());
-app.use(authMiddleware);
+// app.use(authMiddleware);
 app.use('/flower', flowerRoutes);
 
 module.exports = app;

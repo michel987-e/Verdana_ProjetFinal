@@ -21,6 +21,21 @@ exports.getFlowersByUserId = async (user_id) => {
   }
 };
 
+exports.getFlowersById = async (id) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM flowers WHERE id = $1',
+      [id]
+    );
+    if (result.rowCount === 0) {
+      throw new Error(`No flower found with id ${id}`);
+    }
+    return result.rows[0];
+  } catch (err) {
+    throw new Error(`[MODEL] ${err.message}`);
+  }
+};
+
 exports.createFlower = async (flowerData) => {
   try {
     const query = `

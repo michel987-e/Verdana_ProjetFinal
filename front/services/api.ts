@@ -1,13 +1,15 @@
 import axios from 'axios';
 import { getSecureItem } from './secureStore';
+import Constants from 'expo-constants';
 
+const ip = Constants.expoConfig?.extra?.IP_ADDRESS;
 const config = {
- baseURL: 'http://10.0.2.2:80',
+    baseUrl: `http://${ip || '10.0.2.2'}:80`,
 //  domain: 'localhost',
 };
 
 const api = axios.create({
- baseURL: config.baseURL,
+ baseURL: config.baseUrl,
  withCredentials: true,
 });
 

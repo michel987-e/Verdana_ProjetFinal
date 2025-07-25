@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { changePassword, updateUser } from '../services/userService';
 import { validateToken } from '../services/authService';
+import { DropDownSelect } from 'react-native-simple-dropdown-select';
 
 export default function EditProfileField({ route, navigation }: any) {
     const { field, label, value } = route.params;
