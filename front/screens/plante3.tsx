@@ -35,7 +35,7 @@ const host ='192.168.167.197'
         console.log(' Données reçues depuis ESP32 :', json);
         setData({
           temp: json.temperature,
-          hum: json.humidity,
+          hum: json.soil_moisture,
           lux: json.light
         });
       })

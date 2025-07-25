@@ -166,6 +166,16 @@ services:
       - notification-data:/var/lib/postgresql/data
     networks:
       - micro-services
+  plante-api:
+    build:
+      context: ./arduino
+      dockerfile: Dockerfile
+    container_name: plante-api-container
+    ports:
+      - "8094:8094"
+    restart: unless-stopped
+    networks:
+      - micro-services
 
 volumes:
   flower-data:
