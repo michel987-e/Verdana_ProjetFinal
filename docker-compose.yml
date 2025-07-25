@@ -41,16 +41,16 @@ services:
     networks:
       - micro-services
 
-  front:
-    build: ./front
-    ports:
-      - 19000:19000
-      - 19001:19001
-      - 19002:19002
-    environment:
-      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
-    networks:
-      - micro-services
+  # front:
+  #   build: ./front
+  #   ports:
+  #     - 19000:19000
+  #     - 19001:19001
+  #     - 19002:19002
+  #   environment:
+  #     - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+  #   networks:
+  #     - micro-services
 
   user:
     build: ./user-service
@@ -133,39 +133,58 @@ services:
 
   recommendation:
     build: ./recommendation-service
+    expose:
+      - 80
+    env_file: ./recommendation-service/.env
+    labels:
+      - "traefik.enable=true"
+      # - "traefik.http.routers.front.rule=Host(`sensor.localhost`)"
+      - "traefik.http.routers.recommendation.rule=PathPrefix(`/recommendation`)"
+      - "traefik.http.services.recommendation.loadbalancer.server.port=80"
     depends_on:
       kafka:
         condition: service_started
       sensor:
         condition: service_started
-    networks:
-      - micro-services
-
-  notification:
-    build: ./notification-service
-    expose:
-      - 80
-    env_file: ./notification-service/.env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
-      - "traefik.http.services.notification.loadbalancer.server.port=80"
-    depends_on:
-      kafka:
-        condition: service_started
-      notification-db:
+      recommendation-db:
         condition: service_started
     networks:
       - micro-services
-
-  notification-db:
+  
+  recommendation-db:
     image: postgres:15
-    env_file: ./notification-service/.env
+    env_file: ./recommendation-service/.env
     volumes:
-      - ./notification-service/init.sql:/docker-entrypoint-initdb.d/init-notification.sql
-      - notification-data:/var/lib/postgresql/data
+      - ./recommendation-service/init.sql:/docker-entrypoint-initdb.d/init-recommendation.sql
+      - recommendation-data:/var/lib/postgresql/data
     networks:
       - micro-services
+
+  # notification:
+  #   build: ./notification-service
+  #   expose:
+  #     - 80
+  #   env_file: ./notification-service/.env
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.notification.rule=PathPrefix(`/notification`)"
+  #     - "traefik.http.services.notification.loadbalancer.server.port=80"
+  #   depends_on:
+  #     kafka:
+  #       condition: service_started
+  #     notification-db:
+  #       condition: service_started
+  #   networks:
+  #     - micro-services
+
+  # notification-db:
+  #   image: postgres:15
+  #   env_file: ./notification-service/.env
+  #   volumes:
+  #     - ./notification-service/init.sql:/docker-entrypoint-initdb.d/init-notification.sql
+  #     - notification-data:/var/lib/postgresql/data
+  #   networks:
+  #     - micro-services
 
 volumes:
   flower-data:
@@ -173,6 +192,8 @@ volumes:
   sensor-data:
     driver: local
   notification-data:
+    driver: local
+  recommendation-data:
     driver: local
 
 networks:

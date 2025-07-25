@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as Location from 'expo-location';
 import { useRoute } from '@react-navigation/native';
 
+
 import { Platform } from 'react-native';
 
 const getWSHost = () => {

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS recommendation (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  token VARCHAR NOT NULL
+);

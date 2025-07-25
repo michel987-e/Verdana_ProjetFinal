@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  Alert,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Searchbar } from 'react-native-paper';
+import { createFlower } from 'services/flowerService';
+import { validateToken } from 'services/authService';
+import { getUserById } from 'services/userService';
+import { IUser } from 'interfaces';
 
 const PLANTS = [
   {
@@ -26,12 +38,59 @@ const PLANTS = [
   },
 ];
 
-
 export default function AddPlante({ navigation }: any) {
   const [search, setSearch] = useState('');
-  const filteredPlants = PLANTS.filter(plant =>
+  const [userData, setUserData] = useState<IUser>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await validateToken();
+        const user = await getUserById(data.payload.sub);
+        setUserData(user);
+      } catch (err) {
+        console.error('Erreur récupération user', err);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const filteredPlants = PLANTS.filter((plant) =>
     plant.name.toLowerCase().includes(search.toLowerCase())
   );
+
+const handleAddPlant = async (item: any) => {
+  if (!userData?.id) {
+    Alert.alert('Erreur', "Utilisateur non identifié");
+    return;
+  }
+
+  const payload = {
+    user_id: userData.id,
+    name: item.name,
+    plant_type: "classique",
+    location: "Salon",
+    temp_min: 18,
+    temp_max: 25,
+    humidity_min: 40,
+    humidity_max: 60,
+    soil_min: 30,
+    soil_max: 70,
+    light_min: 100,
+    light_max: 1000,
+  };
+
+  console.log(" Payload envoyé à createFlower:", payload);
+
+  try {
+    await createFlower(payload);
+    Alert.alert('Succès', 'Plante ajoutée avec succès !');
+    navigation.navigate('Home', { refresh: true });
+  } catch (error: any) {
+    console.log('Erreur lors de l’ajout de la plante :', error.response?.data || error.message);
+    Alert.alert('Erreur', "Impossible d’ajouter la plante. Veuillez réessayer.");
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -54,15 +113,15 @@ export default function AddPlante({ navigation }: any) {
       <Text style={styles.sectionTitle}>Populaire</Text>
       <FlatList
         data={filteredPlants}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.imageWrapper}>
-              <TouchableOpacity onPress={() => navigation.navigate('Info', { plantId: item.id })}>
-              <Image source={item.image} style={styles.plantImage} />
+              <TouchableOpacity onPress={() => handleAddPlant(item)}>
+                <Image source={item.image} style={styles.plantImage} />
               </TouchableOpacity>
             </View>
             <Text style={styles.plantName}>{item.name}</Text>
