@@ -18,6 +18,7 @@ import { IFlower } from "interfaces";
 import * as Location from "expo-location";
 import { Platform, PermissionsAndroid } from "react-native";
 import Constants from 'expo-constants';
+import { Feather } from "@expo/vector-icons";
 
 
 const { width } = Dimensions.get("window");
@@ -310,6 +311,15 @@ type CarouselItem = {
           );
         }}
       />
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Home")}>
+          <Feather name="home" size={24} color="#2C5530" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Parametres")}>
+          <Feather name="settings" size={24} color="#2C5530" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -358,4 +368,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2C5530",
   },
+    bottomNav: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
+    position: "absolute",
+    bottom: 15,
+    left: 0,
+    right: 0,
+    height: 60,
+  },
+  navItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    
 });
