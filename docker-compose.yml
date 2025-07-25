@@ -135,7 +135,6 @@ services:
     build: ./recommendation-service
     expose:
       - 80
-    env_file: ./recommendation-service/.env
     labels:
       - "traefik.enable=true"
       # - "traefik.http.routers.front.rule=Host(`sensor.localhost`)"
@@ -153,12 +152,15 @@ services:
   
   recommendation-db:
     image: postgres:15
-    env_file: ./recommendation-service/.env
     volumes:
       - ./recommendation-service/init.sql:/docker-entrypoint-initdb.d/init-recommendation.sql
       - recommendation-data:/var/lib/postgresql/data
     networks:
       - micro-services
+  plante-api:
+    build:
+      context: ./arduino
+      dockerfile: Dockerfile
 
   # notification:
   #   build: ./notification-service
